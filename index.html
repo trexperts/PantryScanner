@@ -56,7 +56,12 @@
 </head>
 <body>
 
-<h1>My pantry</h1>
+<h1 id="pantry-title">My pantry</h1>
+<div id="pantry-selector" style="display:flex;align-items:center;gap:8px;margin-bottom:.75rem;flex-wrap:wrap">
+  <select id="pantry-select" onchange="switchPantry(this.value)" style="flex:1;padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit;min-width:0"></select>
+  <button onclick="addNewPantry()" style="padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap">+ New pantry</button>
+  <button onclick="deleteCurrentPantry()" style="padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap">Delete</button>
+</div>
 <div class="sub" id="item-count">5 items tracked</div>
 
 <div id="low-alert" class="alert warn" style="display:none"></div>
@@ -110,21 +115,58 @@
 const ANTHROPIC_MODEL = "claude-sonnet-4-20250514";
 const LOW = 2;
 
-let pantry = [
-  {id:1,name:"Canned tomatoes",qty:3,barcode:""},
-  {id:2,name:"Pasta",qty:2,barcode:""},
-  {id:3,name:"Olive oil",qty:1,barcode:""},
-  {id:4,name:"Garlic",qty:4,barcode:""},
-  {id:5,name:"Rice",qty:1,barcode:""},
-];
+let pantries = {};
+let currentPantry = "";
+let pantry = [];
 let currentTab = 0;
 let recipesCache = {now:null,almost:null};
 let stream = null;
 let codeReader = null;
 
-function save(){localStorage.setItem("pantry_items",JSON.stringify(pantry));}
-function load(){const d=localStorage.getItem("pantry_items");if(d)pantry=JSON.parse(d);}
-load();
+function saveAll(){localStorage.setItem("pantry_all",JSON.stringify(pantries));localStorage.setItem("pantry_current",currentPantry);}
+function loadAll(){
+  const d=localStorage.getItem("pantry_all");
+  if(d)pantries=JSON.parse(d);
+  const c=localStorage.getItem("pantry_current");
+  if(c&&pantries[c]){currentPantry=c;pantry=pantries[c];}
+  else if(Object.keys(pantries).length){currentPantry=Object.keys(pantries)[0];pantry=pantries[currentPantry];}
+}
+function save(){pantries[currentPantry]=pantry;saveAll();}
+function switchPantry(name){currentPantry=name;pantry=pantries[name]||[];recipesCache={now:null,almost:null};saveAll();renderPantrySelector();renderPantrySelector();render();}
+function addNewPantry(){
+  const name=prompt("Enter a name for the new pantry (e.g. Jeff's Pantry):");
+  if(!name||!name.trim())return;
+  const key=name.trim();
+  if(pantries[key]){alert("A pantry with that name already exists.");return;}
+  pantries[key]=[];saveAll();switchPantry(key);
+}
+function deleteCurrentPantry(){
+  if(Object.keys(pantries).length<=1){alert("You need at least one pantry.");return;}
+  if(!confirm("Delete "+currentPantry+"? This cannot be undone."))return;
+  delete pantries[currentPantry];
+  currentPantry=Object.keys(pantries)[0];
+  pantry=pantries[currentPantry];
+  recipesCache={now:null,almost:null};
+  saveAll();renderPantrySelector();render();
+}
+function renderPantrySelector(){
+  const names=Object.keys(pantries);
+  const sel=document.getElementById("pantry-select");
+  sel.innerHTML=names.map(n=>`<option value="${n}"${n===currentPantry?" selected":""}>${n}</option>`).join("");
+  document.getElementById("pantry-selector").style.display=names.length>0?"flex":"none";
+}
+loadAll();
+if(!Object.keys(pantries).length){
+  const def="My Pantry";
+  pantries[def]=[
+    {id:1,name:"Canned tomatoes",qty:3,barcode:""},
+    {id:2,name:"Pasta",qty:2,barcode:""},
+    {id:3,name:"Olive oil",qty:1,barcode:""},
+    {id:4,name:"Garlic",qty:4,barcode:""},
+    {id:5,name:"Rice",qty:1,barcode:""},
+  ];
+  currentPantry=def;pantry=pantries[def];saveAll();
+}
 
 function setTab(i){
   currentTab=i;
@@ -200,6 +242,10 @@ function manualAdd(){
 
 function openScanner(){
   document.getElementById("scanner-overlay").classList.add("open");
+  if(location.protocol==="file:"){
+    document.getElementById("scan-status").textContent="⚠ Camera blocked: open this page via HTTPS (e.g. Netlify or GitHub Pages) for scanning to work on iPhone.";
+    return;
+  }
   document.getElementById("scan-status").textContent="Starting camera…";
   startCamera();
 }
