@@ -29,6 +29,7 @@ h1{font-size:22px;font-weight:500;margin-bottom:.75rem}
 .alert{border-radius:10px;padding:10px 14px;margin-bottom:1rem;font-size:13px}
 .alert.warn{background:var(--amber-bg);border:.5px solid var(--amber-border);color:var(--amber-text)}
 .alert.success{background:var(--green-bg);border:.5px solid var(--green-border);color:var(--green-text)}
+.alert.info{background:var(--blue-bg);border:.5px solid var(--blue-border);color:var(--blue-text)}
 .recipe-card{background:var(--bg);border:.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px}
 .recipe-name{font-size:15px;font-weight:500;margin-bottom:6px}
 .recipe-desc{font-size:13px;color:var(--text2);margin-bottom:10px}
@@ -66,8 +67,8 @@ h1{font-size:22px;font-weight:500;margin-bottom:.75rem}
   <button onclick="deleteCurrentPantry()">Delete</button>
 </div>
 
-<div class="sub" id="item-count"></div>
-
+<div class="sub" id="item-count">Loading…</div>
+<div id="sync-status" class="alert info" style="display:none"></div>
 <div id="low-alert" class="alert warn" style="display:none"></div>
 <div id="scan-feedback" class="alert success" style="display:none"></div>
 
@@ -117,96 +118,132 @@ h1{font-size:22px;font-weight:500;margin-bottom:.75rem}
 <script src="https://unpkg.com/@zxing/library@latest/umd/index.min.js"></script>
 <script>
 const ANTHROPIC_MODEL = "claude-sonnet-4-20250514";
+const SUPABASE_URL = "https://gnawprpsbtfgamgojobc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_WKJC8Gg6EV3PAQYtpaeIwQ_SmBSjK_l";
 const LOW = 2;
-let pantries = {};
-let currentPantry = "";
+
+let pantries = [];
+let currentPantry = null;
 let pantry = [];
 let currentTab = 0;
 let recipesCache = {now:null,almost:null};
-let stream = null;
 let codeReader = null;
+let stream = null;
 
-function saveAll(){
-  localStorage.setItem("pantry_all", JSON.stringify(pantries));
-  localStorage.setItem("pantry_current", currentPantry);
+async function api(method, path, body){
+  const opts = {
+    method,
+    headers:{
+      "Content-Type":"application/json",
+      "apikey": SUPABASE_KEY,
+      "Authorization": "Bearer " + SUPABASE_KEY,
+      "Prefer": method==="POST" ? "return=representation" : ""
+    }
+  };
+  if(body) opts.body = JSON.stringify(body);
+  const r = await fetch(SUPABASE_URL + "/rest/v1/" + path, opts);
+  if(!r.ok){ const e=await r.text(); throw new Error(e); }
+  const txt = await r.text();
+  return txt ? JSON.parse(txt) : null;
 }
 
-function init(){
-  const d = localStorage.getItem("pantry_all");
-  if(d){
-    try{ pantries = JSON.parse(d); } catch(e){ pantries = {}; }
+function syncStatus(msg){
+  const el=document.getElementById("sync-status");
+  if(msg){el.style.display="block";el.textContent=msg;}
+  else el.style.display="none";
+}
+
+async function loadPantries(){
+  syncStatus("Loading pantries…");
+  try{
+    const rows = await api("GET","pantries?select=id,name,items&order=name");
+    pantries = rows || [];
+    if(!pantries.length){
+      await api("POST","pantries",{name:"My Pantry",items:[]});
+      pantries = await api("GET","pantries?select=id,name,items&order=name");
+    }
+    const saved = localStorage.getItem("pantry_current");
+    currentPantry = pantries.find(p=>p.name===saved) || pantries[0];
+    pantry = currentPantry.items || [];
+    syncStatus(null);
+    renderSelector();
+    render();
+  } catch(e){
+    syncStatus("Could not connect to cloud. Check your internet connection.");
   }
-  if(!pantries || Object.keys(pantries).length === 0){
-    pantries = {"My Pantry":[
-      {id:1,name:"Canned tomatoes",qty:3,barcode:""},
-      {id:2,name:"Pasta",qty:2,barcode:""},
-      {id:3,name:"Olive oil",qty:1,barcode:""},
-      {id:4,name:"Garlic",qty:4,barcode:""},
-      {id:5,name:"Rice",qty:1,barcode:""}
-    ]};
-  }
-  const saved = localStorage.getItem("pantry_current");
-  if(saved && pantries[saved]){ currentPantry = saved; }
-  else { currentPantry = Object.keys(pantries)[0]; }
-  pantry = pantries[currentPantry] || [];
-  saveAll();
-  renderSelector();
-  render();
 }
 
 function renderSelector(){
-  const sel = document.getElementById("pantry-select");
-  sel.innerHTML = Object.keys(pantries).map(n =>
-    `<option value="${n.replace(/"/g,'&quot;')}"${n===currentPantry?" selected":""}>${n}</option>`
+  const sel=document.getElementById("pantry-select");
+  sel.innerHTML=pantries.map(p=>
+    `<option value="${p.id}"${p.id===currentPantry.id?" selected":""}>${p.name}</option>`
   ).join("");
 }
 
-function switchPantry(name){
-  if(!pantries[name]) return;
-  currentPantry = name;
-  pantry = pantries[name];
-  recipesCache = {now:null,almost:null};
-  saveAll();
+async function switchPantry(id){
+  const p=pantries.find(p=>p.id===id);
+  if(!p)return;
+  currentPantry=p;
+  pantry=p.items||[];
+  localStorage.setItem("pantry_current",p.name);
+  recipesCache={now:null,almost:null};
   render();
 }
 
-function addNewPantry(){
-  const name = prompt("Enter a name for the new pantry (e.g. Jeff's Pantry):");
-  if(!name || !name.trim()) return;
-  const key = name.trim();
-  if(pantries[key]){ alert("A pantry with that name already exists."); return; }
-  pantries[key] = [];
-  currentPantry = key;
-  pantry = [];
-  recipesCache = {now:null,almost:null};
-  saveAll();
-  renderSelector();
-  render();
+async function addNewPantry(){
+  const name=prompt("Enter a name for the new pantry (e.g. Jeff's Pantry):");
+  if(!name||!name.trim())return;
+  const key=name.trim();
+  if(pantries.find(p=>p.name===key)){alert("A pantry with that name already exists.");return;}
+  syncStatus("Creating pantry…");
+  try{
+    const rows=await api("POST","pantries",{name:key,items:[]});
+    const newP=Array.isArray(rows)?rows[0]:rows;
+    pantries.push(newP);
+    pantries.sort((a,b)=>a.name.localeCompare(b.name));
+    currentPantry=newP;
+    pantry=[];
+    recipesCache={now:null,almost:null};
+    localStorage.setItem("pantry_current",key);
+    syncStatus(null);
+    renderSelector();
+    render();
+  }catch(e){syncStatus("Error creating pantry.");}
 }
 
-function deleteCurrentPantry(){
-  if(Object.keys(pantries).length <= 1){ alert("You need at least one pantry."); return; }
-  if(!confirm("Delete \""+currentPantry+"\"? This cannot be undone.")) return;
-  delete pantries[currentPantry];
-  currentPantry = Object.keys(pantries)[0];
-  pantry = pantries[currentPantry];
-  recipesCache = {now:null,almost:null};
-  saveAll();
-  renderSelector();
-  render();
+async function deleteCurrentPantry(){
+  if(pantries.length<=1){alert("You need at least one pantry.");return;}
+  if(!confirm('Delete "'+currentPantry.name+'"? This cannot be undone.'))return;
+  syncStatus("Deleting…");
+  try{
+    await api("DELETE","pantries?id=eq."+currentPantry.id);
+    pantries=pantries.filter(p=>p.id!==currentPantry.id);
+    currentPantry=pantries[0];
+    pantry=currentPantry.items||[];
+    recipesCache={now:null,almost:null};
+    localStorage.setItem("pantry_current",currentPantry.name);
+    syncStatus(null);
+    renderSelector();
+    render();
+  }catch(e){syncStatus("Error deleting pantry.");}
 }
 
-function save(){ pantries[currentPantry] = pantry; saveAll(); }
+async function saveItems(){
+  try{
+    await api("PATCH","pantries?id=eq."+currentPantry.id,{items:pantry});
+    currentPantry.items=pantry;
+  }catch(e){syncStatus("Error saving. Check connection.");}
+}
 
 function render(){
-  document.getElementById("item-count").textContent = currentPantry + " — " + pantry.length + " items";
-  const low = pantry.filter(i => i.qty <= LOW);
-  const la = document.getElementById("low-alert");
-  if(low.length){ la.style.display="block"; la.innerHTML="<strong>Running low:</strong> "+low.map(i=>i.name).join(", "); }
+  document.getElementById("item-count").textContent=currentPantry.name+" — "+pantry.length+" items";
+  const low=pantry.filter(i=>i.qty<=LOW);
+  const la=document.getElementById("low-alert");
+  if(low.length){la.style.display="block";la.innerHTML="<strong>Running low:</strong> "+low.map(i=>i.name).join(", ");}
   else la.style.display="none";
-  const list = document.getElementById("pantry-list");
-  if(!pantry.length){ list.innerHTML='<div class="empty">No items yet. Scan a barcode to get started.</div>'; return; }
-  list.innerHTML = pantry.map(item=>`
+  const list=document.getElementById("pantry-list");
+  if(!pantry.length){list.innerHTML='<div class="empty">No items yet. Scan a barcode to get started.</div>';return;}
+  list.innerHTML=pantry.map(item=>`
     <div class="item${item.qty<=LOW?" low":""}">
       <div style="flex:1">
         <div class="item-name">${item.name}</div>
@@ -215,23 +252,25 @@ function render(){
       <button class="qty-btn" onclick="updateQty(${item.id},-1)">−</button>
       <span class="qty">${item.qty}</span>
       <button class="qty-btn" onclick="updateQty(${item.id},1)">+</button>
-      <button class="del-btn" onclick="removeItem(${item.id})" title="Remove">✕</button>
+      <button class="del-btn" onclick="removeItem(${item.id})">✕</button>
     </div>`).join("");
 }
 
-function updateQty(id,d){
-  pantry = pantry.map(i=>i.id===id?{...i,qty:i.qty+d}:i).filter(i=>i.qty>0);
-  save(); render();
+async function updateQty(id,d){
+  pantry=pantry.map(i=>i.id===id?{...i,qty:i.qty+d}:i).filter(i=>i.qty>0);
+  render();
+  await saveItems();
 }
 
-function removeItem(id){
-  pantry = pantry.filter(i=>i.id!==id);
-  save(); render();
+async function removeItem(id){
+  pantry=pantry.filter(i=>i.id!==id);
+  render();
+  await saveItems();
 }
 
 function showFeedback(msg){
   const el=document.getElementById("scan-feedback");
-  el.style.display="block"; el.textContent=msg;
+  el.style.display="block";el.textContent=msg;
   clearTimeout(showFeedback._t);
   showFeedback._t=setTimeout(()=>el.style.display="none",3000);
 }
@@ -240,7 +279,7 @@ async function lookupBarcode(code){
   try{
     const r=await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
     const d=await r.json();
-    if(d.status===1&&d.product){ return d.product.product_name||d.product.product_name_en||null; }
+    if(d.status===1&&d.product)return d.product.product_name||d.product.product_name_en||null;
   }catch(e){}
   return null;
 }
@@ -250,19 +289,20 @@ async function handleScan(code){
   const name=await lookupBarcode(code);
   if(name){
     const ex=pantry.find(i=>i.barcode===code);
-    if(ex){ pantry=pantry.map(i=>i.id===ex.id?{...i,qty:i.qty+1}:i); showFeedback("+1 "+name); }
-    else{ pantry.push({id:Date.now(),name,qty:1,barcode:code}); showFeedback("Added: "+name); }
+    if(ex){pantry=pantry.map(i=>i.id===ex.id?{...i,qty:i.qty+1}:i);showFeedback("+1 "+name);}
+    else{pantry.push({id:Date.now(),name,qty:1,barcode:code});showFeedback("Added: "+name);}
   } else {
     const label=prompt("Product not found for barcode "+code+"\nEnter product name:");
-    if(label){ pantry.push({id:Date.now(),name:label,qty:1,barcode:code}); showFeedback("Added: "+label); }
+    if(label){pantry.push({id:Date.now(),name:label,qty:1,barcode:code});showFeedback("Added: "+label);}
   }
-  save(); render();
+  render();
+  await saveItems();
   recipesCache={now:null,almost:null};
 }
 
 function manualAdd(){
   const v=document.getElementById("manual-input").value.trim();
-  if(v){ handleScan(v); document.getElementById("manual-input").value=""; }
+  if(v){handleScan(v);document.getElementById("manual-input").value="";}
 }
 
 function setTab(i){
@@ -271,8 +311,8 @@ function setTab(i){
   document.getElementById("tab-pantry").style.display=i===0?"block":"none";
   document.getElementById("tab-now").style.display=i===1?"block":"none";
   document.getElementById("tab-almost").style.display=i===2?"block":"none";
-  if(i===1&&!recipesCache.now) loadRecipes("now");
-  if(i===2&&!recipesCache.almost) loadRecipes("almost");
+  if(i===1&&!recipesCache.now)loadRecipes("now");
+  if(i===2&&!recipesCache.almost)loadRecipes("almost");
 }
 
 function openScanner(){
@@ -291,19 +331,19 @@ function closeScanner(){
 }
 
 function stopCamera(){
-  if(codeReader){ try{ codeReader.reset(); }catch(e){} }
-  if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+  if(codeReader){try{codeReader.reset();}catch(e){}}
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
 }
 
 function startCamera(){
-  if(typeof ZXing==="undefined"){ setTimeout(startCamera,500); return; }
+  if(typeof ZXing==="undefined"){setTimeout(startCamera,500);return;}
   try{
     codeReader=new ZXing.BrowserMultiFormatReader();
     codeReader.decodeFromConstraints(
       {video:{facingMode:{ideal:"environment"}}},
       "video",
       (result,err)=>{
-        if(result){ stopCamera(); handleScan(result.getText()); }
+        if(result){stopCamera();handleScan(result.getText());}
         else if(err&&!(err instanceof ZXing.NotFoundException)){
           document.getElementById("scan-status").textContent="Camera error. Use manual entry.";
         } else {
@@ -318,7 +358,7 @@ function startCamera(){
 
 async function loadRecipes(mode){
   const el=document.getElementById("recipes-"+mode);
-  if(!pantry.length){ el.innerHTML='<div class="empty">Add items to your pantry first.</div>'; return; }
+  if(!pantry.length){el.innerHTML='<div class="empty">Add items to your pantry first.</div>';return;}
   el.innerHTML='<div class="loading">Finding recipes…</div>';
   const items=pantry.map(i=>`${i.name} (qty: ${i.qty})`).join(", ");
   const prompt=mode==="now"
@@ -349,7 +389,7 @@ async function loadRecipes(mode){
   }
 }
 
-init();
+loadPantries();
 </script>
 </body>
 </html>
