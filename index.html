@@ -132,7 +132,7 @@ function loadAll(){
   else if(Object.keys(pantries).length){currentPantry=Object.keys(pantries)[0];pantry=pantries[currentPantry];}
 }
 function save(){pantries[currentPantry]=pantry;saveAll();}
-function switchPantry(name){currentPantry=name;pantry=pantries[name]||[];recipesCache={now:null,almost:null};saveAll();renderPantrySelector();renderPantrySelector();render();}
+function switchPantry(name){currentPantry=name;pantry=pantries[name]||[];recipesCache={now:null,almost:null};saveAll();renderPantrySelector();window.addEventListener("DOMContentLoaded",()=>{renderPantrySelector();render();});}
 function addNewPantry(){
   const name=prompt("Enter a name for the new pantry (e.g. Jeff's Pantry):");
   if(!name||!name.trim())return;
