@@ -5,64 +5,68 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Pantry Scanner</title>
-<script src="https://unpkg.com/@zxing/library@latest/umd/index.min.js"></script>
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  :root{--bg:#fff;--bg2:#f5f5f0;--bg3:#eeeee8;--text:#111;--text2:#666;--text3:#999;--border:rgba(0,0,0,0.12);--green-bg:#eaf3de;--green-text:#3b6d11;--green-border:#a0c96a;--amber-bg:#faeeda;--amber-text:#854f0b;--amber-border:#efb245;--blue-bg:#e6f1fb;--blue-text:#185fa5;--blue-border:#7ab8e8}
-  @media(prefers-color-scheme:dark){:root{--bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;--text:#f2f2f7;--text2:#aeaeb2;--text3:#636366;--border:rgba(255,255,255,0.12);--green-bg:#1a3010;--green-text:#a0c96a;--green-border:#3b6d11;--amber-bg:#2d1e00;--amber-text:#efb245;--amber-border:#854f0b;--blue-bg:#0d2140;--blue-text:#7ab8e8;--blue-border:#185fa5}}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);max-width:600px;margin:0 auto;padding:1rem 1rem 5rem;font-size:16px}
-  h1{font-size:22px;font-weight:500;margin-bottom:.25rem}
-  .sub{font-size:13px;color:var(--text2);margin-bottom:1.25rem}
-  .tabs{display:flex;gap:8px;margin-bottom:1.25rem}
-  .tab{flex:1;padding:8px 0;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;font-family:inherit}
-  .tab.active{border:1.5px solid var(--blue-border);background:var(--blue-bg);color:var(--blue-text);font-weight:500}
-  .scan-btn{width:100%;padding:11px;border-radius:10px;border:.5px solid var(--border);background:var(--bg2);font-size:14px;cursor:pointer;color:var(--text);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:1rem;font-family:inherit}
-  .item{background:var(--bg);border:.5px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
-  .item.low{border-color:var(--amber-border)}
-  .item-name{flex:1;font-size:14px;font-weight:500}
-  .low-label{font-size:11px;color:var(--amber-text);margin-top:2px}
-  .qty-btn{width:28px;height:28px;border-radius:6px;border:.5px solid var(--border);background:var(--bg2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);font-family:inherit;flex-shrink:0}
-  .qty{font-size:14px;font-weight:500;min-width:20px;text-align:center}
-  .alert{border-radius:10px;padding:10px 14px;margin-bottom:1rem;font-size:13px}
-  .alert.warn{background:var(--amber-bg);border:.5px solid var(--amber-border);color:var(--amber-text)}
-  .alert.success{background:var(--green-bg);border:.5px solid var(--green-border);color:var(--green-text)}
-  .recipe-card{background:var(--bg);border:.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px}
-  .recipe-name{font-size:15px;font-weight:500;margin-bottom:6px}
-  .recipe-desc{font-size:13px;color:var(--text2);margin-bottom:10px}
-  .tags{display:flex;flex-wrap:wrap;gap:6px}
-  .tag{font-size:11px;padding:3px 8px;border-radius:6px}
-  .tag.have{background:var(--green-bg);color:var(--green-text);border:.5px solid var(--green-border)}
-  .tag.need{background:var(--amber-bg);color:var(--amber-text);border:.5px solid var(--amber-border)}
-  .refresh-btn{font-size:12px;color:var(--text2);background:none;border:none;cursor:pointer;margin-bottom:1rem;padding:0;font-family:inherit}
-  .empty{text-align:center;color:var(--text3);font-size:14px;padding:2rem 0}
-  .loading{text-align:center;color:var(--text2);font-size:14px;padding:3rem 0}
-  /* Scanner overlay */
-  #scanner-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center}
-  #scanner-overlay.open{display:flex}
-  .scanner-box{background:var(--bg);border-radius:16px;padding:1.5rem;width:340px;max-width:92vw}
-  .scanner-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
-  .scanner-title{font-size:18px;font-weight:500}
-  .close-btn{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text2);line-height:1;font-family:inherit}
-  #video-wrap{background:#000;border-radius:8px;overflow:hidden;height:220px;position:relative;margin-bottom:1rem}
-  #video{width:100%;height:100%;object-fit:cover;display:block}
-  .viewfinder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
-  .viewfinder-rect{border:2px solid rgba(255,255,255,.7);border-radius:4px;width:220px;height:80px}
-  #scan-status{font-size:13px;color:var(--text2);text-align:center;margin-bottom:1rem;min-height:18px}
-  .manual-row{display:flex;gap:8px}
-  .manual-input{flex:1;padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit}
-  .manual-btn{padding:8px 16px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);cursor:pointer;font-size:14px;color:var(--text);font-family:inherit}
-  .or-divider{font-size:12px;color:var(--text3);margin-bottom:8px}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#fff;--bg2:#f5f5f0;--bg3:#eeeee8;--text:#111;--text2:#666;--text3:#999;--border:rgba(0,0,0,0.12);--green-bg:#eaf3de;--green-text:#3b6d11;--green-border:#a0c96a;--amber-bg:#faeeda;--amber-text:#854f0b;--amber-border:#efb245;--blue-bg:#e6f1fb;--blue-text:#185fa5;--blue-border:#7ab8e8}
+@media(prefers-color-scheme:dark){:root{--bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;--text:#f2f2f7;--text2:#aeaeb2;--text3:#636366;--border:rgba(255,255,255,0.12);--green-bg:#1a3010;--green-text:#a0c96a;--green-border:#3b6d11;--amber-bg:#2d1e00;--amber-text:#efb245;--amber-border:#854f0b;--blue-bg:#0d2140;--blue-text:#7ab8e8;--blue-border:#185fa5}}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);max-width:600px;margin:0 auto;padding:1rem 1rem 5rem;font-size:16px}
+h1{font-size:22px;font-weight:500;margin-bottom:.75rem}
+.sub{font-size:13px;color:var(--text2);margin-bottom:1.25rem}
+.selector-row{display:flex;align-items:center;gap:8px;margin-bottom:.75rem;flex-wrap:wrap}
+.selector-row select{flex:1;padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit;min-width:0}
+.selector-row button{padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.tabs{display:flex;gap:8px;margin-bottom:1.25rem}
+.tab{flex:1;padding:8px 0;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;font-family:inherit}
+.tab.active{border:1.5px solid var(--blue-border);background:var(--blue-bg);color:var(--blue-text);font-weight:500}
+.scan-btn{width:100%;padding:11px;border-radius:10px;border:.5px solid var(--border);background:var(--bg2);font-size:14px;cursor:pointer;color:var(--text);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:1rem;font-family:inherit}
+.item{background:var(--bg);border:.5px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.item.low{border-color:var(--amber-border)}
+.item-name{flex:1;font-size:14px;font-weight:500}
+.low-label{font-size:11px;color:var(--amber-text);margin-top:2px}
+.qty-btn{width:28px;height:28px;border-radius:6px;border:.5px solid var(--border);background:var(--bg2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);font-family:inherit;flex-shrink:0}
+.del-btn{width:28px;height:28px;border-radius:6px;border:.5px solid var(--border);background:var(--bg2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);font-family:inherit;flex-shrink:0;margin-left:4px}
+.qty{font-size:14px;font-weight:500;min-width:20px;text-align:center}
+.alert{border-radius:10px;padding:10px 14px;margin-bottom:1rem;font-size:13px}
+.alert.warn{background:var(--amber-bg);border:.5px solid var(--amber-border);color:var(--amber-text)}
+.alert.success{background:var(--green-bg);border:.5px solid var(--green-border);color:var(--green-text)}
+.recipe-card{background:var(--bg);border:.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.recipe-name{font-size:15px;font-weight:500;margin-bottom:6px}
+.recipe-desc{font-size:13px;color:var(--text2);margin-bottom:10px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:11px;padding:3px 8px;border-radius:6px}
+.tag.have{background:var(--green-bg);color:var(--green-text);border:.5px solid var(--green-border)}
+.tag.need{background:var(--amber-bg);color:var(--amber-text);border:.5px solid var(--amber-border)}
+.refresh-btn{font-size:12px;color:var(--text2);background:none;border:none;cursor:pointer;margin-bottom:1rem;padding:0;font-family:inherit}
+.empty{text-align:center;color:var(--text3);font-size:14px;padding:2rem 0}
+.loading{text-align:center;color:var(--text2);font-size:14px;padding:3rem 0}
+#scanner-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center}
+#scanner-overlay.open{display:flex}
+.scanner-box{background:var(--bg);border-radius:16px;padding:1.5rem;width:340px;max-width:92vw}
+.scanner-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.scanner-title{font-size:18px;font-weight:500}
+.close-btn{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text2);line-height:1;font-family:inherit}
+#video-wrap{background:#000;border-radius:8px;overflow:hidden;height:220px;position:relative;margin-bottom:1rem}
+#video{width:100%;height:100%;object-fit:cover;display:block}
+.viewfinder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.viewfinder-rect{border:2px solid rgba(255,255,255,.7);border-radius:4px;width:220px;height:80px}
+#scan-status{font-size:13px;color:var(--text2);text-align:center;margin-bottom:1rem;min-height:18px}
+.manual-row{display:flex;gap:8px}
+.manual-input{flex:1;padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit}
+.manual-btn{padding:8px 16px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);cursor:pointer;font-size:14px;color:var(--text);font-family:inherit}
+.or-divider{font-size:12px;color:var(--text3);margin-bottom:8px}
 </style>
 </head>
 <body>
 
-<h1 id="pantry-title">My pantry</h1>
-<div id="pantry-selector" style="display:flex;align-items:center;gap:8px;margin-bottom:.75rem;flex-wrap:wrap">
-  <select id="pantry-select" onchange="switchPantry(this.value)" style="flex:1;padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit;min-width:0"></select>
-  <button onclick="addNewPantry()" style="padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap">+ New pantry</button>
-  <button onclick="deleteCurrentPantry()" style="padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap">Delete</button>
+<h1>Pantry Scanner</h1>
+
+<div class="selector-row">
+  <select id="pantry-select" onchange="switchPantry(this.value)"></select>
+  <button onclick="addNewPantry()">+ New</button>
+  <button onclick="deleteCurrentPantry()">Delete</button>
 </div>
-<div class="sub" id="item-count">5 items tracked</div>
+
+<div class="sub" id="item-count"></div>
 
 <div id="low-alert" class="alert warn" style="display:none"></div>
 <div id="scan-feedback" class="alert success" style="display:none"></div>
@@ -91,7 +95,6 @@
   <div id="recipes-almost"></div>
 </div>
 
-<!-- Scanner Overlay -->
 <div id="scanner-overlay">
   <div class="scanner-box">
     <div class="scanner-header">
@@ -111,10 +114,10 @@
   </div>
 </div>
 
+<script src="https://unpkg.com/@zxing/library@latest/umd/index.min.js"></script>
 <script>
 const ANTHROPIC_MODEL = "claude-sonnet-4-20250514";
 const LOW = 2;
-
 let pantries = {};
 let currentPantry = "";
 let pantry = [];
@@ -123,70 +126,87 @@ let recipesCache = {now:null,almost:null};
 let stream = null;
 let codeReader = null;
 
-function saveAll(){localStorage.setItem("pantry_all",JSON.stringify(pantries));localStorage.setItem("pantry_current",currentPantry);}
-function loadAll(){
-  const d=localStorage.getItem("pantry_all");
-  if(d)pantries=JSON.parse(d);
-  const c=localStorage.getItem("pantry_current");
-  if(c&&pantries[c]){currentPantry=c;pantry=pantries[c];}
-  else if(Object.keys(pantries).length){currentPantry=Object.keys(pantries)[0];pantry=pantries[currentPantry];}
-}
-function save(){pantries[currentPantry]=pantry;saveAll();}
-function switchPantry(name){currentPantry=name;pantry=pantries[name]||[];recipesCache={now:null,almost:null};saveAll();renderPantrySelector();window.addEventListener("DOMContentLoaded",()=>{renderPantrySelector();render();});}
-function addNewPantry(){
-  const name=prompt("Enter a name for the new pantry (e.g. Jeff's Pantry):");
-  if(!name||!name.trim())return;
-  const key=name.trim();
-  if(pantries[key]){alert("A pantry with that name already exists.");return;}
-  pantries[key]=[];saveAll();switchPantry(key);
-}
-function deleteCurrentPantry(){
-  if(Object.keys(pantries).length<=1){alert("You need at least one pantry.");return;}
-  if(!confirm("Delete "+currentPantry+"? This cannot be undone."))return;
-  delete pantries[currentPantry];
-  currentPantry=Object.keys(pantries)[0];
-  pantry=pantries[currentPantry];
-  recipesCache={now:null,almost:null};
-  saveAll();renderPantrySelector();render();
-}
-function renderPantrySelector(){
-  const names=Object.keys(pantries);
-  const sel=document.getElementById("pantry-select");
-  sel.innerHTML=names.map(n=>`<option value="${n}"${n===currentPantry?" selected":""}>${n}</option>`).join("");
-  document.getElementById("pantry-selector").style.display=names.length>0?"flex":"none";
-}
-loadAll();
-if(!Object.keys(pantries).length){
-  const def="My Pantry";
-  pantries[def]=[
-    {id:1,name:"Canned tomatoes",qty:3,barcode:""},
-    {id:2,name:"Pasta",qty:2,barcode:""},
-    {id:3,name:"Olive oil",qty:1,barcode:""},
-    {id:4,name:"Garlic",qty:4,barcode:""},
-    {id:5,name:"Rice",qty:1,barcode:""},
-  ];
-  currentPantry=def;pantry=pantries[def];saveAll();
+function saveAll(){
+  localStorage.setItem("pantry_all", JSON.stringify(pantries));
+  localStorage.setItem("pantry_current", currentPantry);
 }
 
-function setTab(i){
-  currentTab=i;
-  document.querySelectorAll(".tab").forEach((t,j)=>t.classList.toggle("active",i===j));
-  document.getElementById("tab-pantry").style.display=i===0?"block":"none";
-  document.getElementById("tab-now").style.display=i===1?"block":"none";
-  document.getElementById("tab-almost").style.display=i===2?"block":"none";
-  if(i===1&&!recipesCache.now)loadRecipes("now");
-  if(i===2&&!recipesCache.almost)loadRecipes("almost");
+function init(){
+  const d = localStorage.getItem("pantry_all");
+  if(d){
+    try{ pantries = JSON.parse(d); } catch(e){ pantries = {}; }
+  }
+  if(!pantries || Object.keys(pantries).length === 0){
+    pantries = {"My Pantry":[
+      {id:1,name:"Canned tomatoes",qty:3,barcode:""},
+      {id:2,name:"Pasta",qty:2,barcode:""},
+      {id:3,name:"Olive oil",qty:1,barcode:""},
+      {id:4,name:"Garlic",qty:4,barcode:""},
+      {id:5,name:"Rice",qty:1,barcode:""}
+    ]};
+  }
+  const saved = localStorage.getItem("pantry_current");
+  if(saved && pantries[saved]){ currentPantry = saved; }
+  else { currentPantry = Object.keys(pantries)[0]; }
+  pantry = pantries[currentPantry] || [];
+  saveAll();
+  renderSelector();
+  render();
 }
+
+function renderSelector(){
+  const sel = document.getElementById("pantry-select");
+  sel.innerHTML = Object.keys(pantries).map(n =>
+    `<option value="${n.replace(/"/g,'&quot;')}"${n===currentPantry?" selected":""}>${n}</option>`
+  ).join("");
+}
+
+function switchPantry(name){
+  if(!pantries[name]) return;
+  currentPantry = name;
+  pantry = pantries[name];
+  recipesCache = {now:null,almost:null};
+  saveAll();
+  render();
+}
+
+function addNewPantry(){
+  const name = prompt("Enter a name for the new pantry (e.g. Jeff's Pantry):");
+  if(!name || !name.trim()) return;
+  const key = name.trim();
+  if(pantries[key]){ alert("A pantry with that name already exists."); return; }
+  pantries[key] = [];
+  currentPantry = key;
+  pantry = [];
+  recipesCache = {now:null,almost:null};
+  saveAll();
+  renderSelector();
+  render();
+}
+
+function deleteCurrentPantry(){
+  if(Object.keys(pantries).length <= 1){ alert("You need at least one pantry."); return; }
+  if(!confirm("Delete \""+currentPantry+"\"? This cannot be undone.")) return;
+  delete pantries[currentPantry];
+  currentPantry = Object.keys(pantries)[0];
+  pantry = pantries[currentPantry];
+  recipesCache = {now:null,almost:null};
+  saveAll();
+  renderSelector();
+  render();
+}
+
+function save(){ pantries[currentPantry] = pantry; saveAll(); }
 
 function render(){
-  document.getElementById("item-count").textContent=pantry.length+" items tracked";
-  const low=pantry.filter(i=>i.qty<=LOW);
-  const la=document.getElementById("low-alert");
-  if(low.length){la.style.display="block";la.innerHTML="<strong>Running low:</strong> "+low.map(i=>i.name).join(", ");}
+  document.getElementById("item-count").textContent = currentPantry + " — " + pantry.length + " items";
+  const low = pantry.filter(i => i.qty <= LOW);
+  const la = document.getElementById("low-alert");
+  if(low.length){ la.style.display="block"; la.innerHTML="<strong>Running low:</strong> "+low.map(i=>i.name).join(", "); }
   else la.style.display="none";
-  const list=document.getElementById("pantry-list");
-  if(!pantry.length){list.innerHTML='<div class="empty">No items yet. Scan a barcode to get started.</div>';return;}
-  list.innerHTML=pantry.map(item=>`
+  const list = document.getElementById("pantry-list");
+  if(!pantry.length){ list.innerHTML='<div class="empty">No items yet. Scan a barcode to get started.</div>'; return; }
+  list.innerHTML = pantry.map(item=>`
     <div class="item${item.qty<=LOW?" low":""}">
       <div style="flex:1">
         <div class="item-name">${item.name}</div>
@@ -195,17 +215,23 @@ function render(){
       <button class="qty-btn" onclick="updateQty(${item.id},-1)">−</button>
       <span class="qty">${item.qty}</span>
       <button class="qty-btn" onclick="updateQty(${item.id},1)">+</button>
+      <button class="del-btn" onclick="removeItem(${item.id})" title="Remove">✕</button>
     </div>`).join("");
 }
 
 function updateQty(id,d){
-  pantry=pantry.map(i=>i.id===id?{...i,qty:i.qty+d}:i).filter(i=>i.qty>0);
-  save();render();
+  pantry = pantry.map(i=>i.id===id?{...i,qty:i.qty+d}:i).filter(i=>i.qty>0);
+  save(); render();
+}
+
+function removeItem(id){
+  pantry = pantry.filter(i=>i.id!==id);
+  save(); render();
 }
 
 function showFeedback(msg){
   const el=document.getElementById("scan-feedback");
-  el.style.display="block";el.textContent=msg;
+  el.style.display="block"; el.textContent=msg;
   clearTimeout(showFeedback._t);
   showFeedback._t=setTimeout(()=>el.style.display="none",3000);
 }
@@ -214,36 +240,45 @@ async function lookupBarcode(code){
   try{
     const r=await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
     const d=await r.json();
-    if(d.status===1&&d.product){return d.product.product_name||d.product.product_name_en||null;}
+    if(d.status===1&&d.product){ return d.product.product_name||d.product.product_name_en||null; }
   }catch(e){}
   return null;
 }
 
 async function handleScan(code){
   closeScanner();
-  document.getElementById("scan-status").textContent="Looking up…";
   const name=await lookupBarcode(code);
   if(name){
     const ex=pantry.find(i=>i.barcode===code);
-    if(ex){pantry=pantry.map(i=>i.id===ex.id?{...i,qty:i.qty+1}:i);showFeedback("+1 "+name);}
-    else{pantry.push({id:Date.now(),name,qty:1,barcode:code});showFeedback("Added: "+name);}
+    if(ex){ pantry=pantry.map(i=>i.id===ex.id?{...i,qty:i.qty+1}:i); showFeedback("+1 "+name); }
+    else{ pantry.push({id:Date.now(),name,qty:1,barcode:code}); showFeedback("Added: "+name); }
   } else {
     const label=prompt("Product not found for barcode "+code+"\nEnter product name:");
-    if(label){pantry.push({id:Date.now(),name:label,qty:1,barcode:code});showFeedback("Added: "+label);}
+    if(label){ pantry.push({id:Date.now(),name:label,qty:1,barcode:code}); showFeedback("Added: "+label); }
   }
-  save();render();
+  save(); render();
   recipesCache={now:null,almost:null};
 }
 
 function manualAdd(){
   const v=document.getElementById("manual-input").value.trim();
-  if(v){handleScan(v);document.getElementById("manual-input").value="";}
+  if(v){ handleScan(v); document.getElementById("manual-input").value=""; }
+}
+
+function setTab(i){
+  currentTab=i;
+  document.querySelectorAll(".tab").forEach((t,j)=>t.classList.toggle("active",i===j));
+  document.getElementById("tab-pantry").style.display=i===0?"block":"none";
+  document.getElementById("tab-now").style.display=i===1?"block":"none";
+  document.getElementById("tab-almost").style.display=i===2?"block":"none";
+  if(i===1&&!recipesCache.now) loadRecipes("now");
+  if(i===2&&!recipesCache.almost) loadRecipes("almost");
 }
 
 function openScanner(){
   document.getElementById("scanner-overlay").classList.add("open");
   if(location.protocol==="file:"){
-    document.getElementById("scan-status").textContent="⚠ Camera blocked: open this page via HTTPS (e.g. Netlify or GitHub Pages) for scanning to work on iPhone.";
+    document.getElementById("scan-status").textContent="Camera blocked: open via HTTPS for scanning to work on iPhone.";
     return;
   }
   document.getElementById("scan-status").textContent="Starting camera…";
@@ -256,39 +291,34 @@ function closeScanner(){
 }
 
 function stopCamera(){
-  if(codeReader){try{codeReader.reset();}catch(e){}}
-  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
+  if(codeReader){ try{ codeReader.reset(); }catch(e){} }
+  if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
 }
 
 function startCamera(){
-  if(typeof ZXing==="undefined"){
-    document.getElementById("scan-status").textContent="Scanner library loading…";
-    setTimeout(startCamera,500);return;
-  }
+  if(typeof ZXing==="undefined"){ setTimeout(startCamera,500); return; }
   try{
     codeReader=new ZXing.BrowserMultiFormatReader();
     codeReader.decodeFromConstraints(
       {video:{facingMode:{ideal:"environment"}}},
       "video",
       (result,err)=>{
-        if(result){
-          stopCamera();
-          handleScan(result.getText());
-        } else if(err&&!(err instanceof ZXing.NotFoundException)){
+        if(result){ stopCamera(); handleScan(result.getText()); }
+        else if(err&&!(err instanceof ZXing.NotFoundException)){
           document.getElementById("scan-status").textContent="Camera error. Use manual entry.";
         } else {
           document.getElementById("scan-status").textContent="Point camera at barcode";
         }
       }
     );
-  } catch(e){
+  }catch(e){
     document.getElementById("scan-status").textContent="Camera unavailable. Use manual entry below.";
   }
 }
 
 async function loadRecipes(mode){
   const el=document.getElementById("recipes-"+mode);
-  if(!pantry.length){el.innerHTML='<div class="empty">Add items to your pantry first.</div>';return;}
+  if(!pantry.length){ el.innerHTML='<div class="empty">Add items to your pantry first.</div>'; return; }
   el.innerHTML='<div class="loading">Finding recipes…</div>';
   const items=pantry.map(i=>`${i.name} (qty: ${i.qty})`).join(", ");
   const prompt=mode==="now"
@@ -314,12 +344,12 @@ async function loadRecipes(mode){
           ${mode==="almost"?(r.missing||[]).map(ing=>`<span class="tag need">Need: ${ing}</span>`).join(""):""}
         </div>
       </div>`).join("");
-  } catch(e){
+  }catch(e){
     el.innerHTML='<div class="empty">Could not load recipes. Try again.</div>';
   }
 }
 
-render();
+init();
 </script>
 </body>
 </html>
