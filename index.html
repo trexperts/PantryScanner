@@ -79,10 +79,15 @@ h1{font-size:22px;font-weight:500;margin-bottom:.75rem}
 </div>
 
 <div id="tab-pantry">
-  <button class="scan-btn" onclick="openScanner()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="4" height="18" rx="1"/><rect x="8" y="3" width="2" height="18" rx="1"/><rect x="12" y="3" width="4" height="18" rx="1"/><rect x="18" y="3" width="4" height="18" rx="1"/></svg>
-    Scan barcode
-  </button>
+  <div style="display:flex;gap:8px;margin-bottom:1rem">
+    <button class="scan-btn" style="margin-bottom:0;flex:1" onclick="openScanner('image')">
+      📷 Scan Picture
+    </button>
+    <button class="scan-btn" style="margin-bottom:0;flex:1" onclick="openScanner('barcode')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="4" height="18" rx="1"/><rect x="8" y="3" width="2" height="18" rx="1"/><rect x="12" y="3" width="4" height="18" rx="1"/><rect x="18" y="3" width="4" height="18" rx="1"/></svg>
+      Scan Barcode
+    </button>
+  </div>
   <div id="pantry-list"></div>
 </div>
 
@@ -99,7 +104,7 @@ h1{font-size:22px;font-weight:500;margin-bottom:.75rem}
 <div id="scanner-overlay">
   <div class="scanner-box">
     <div class="scanner-header">
-      <span class="scanner-title">Scan barcode</span>
+      <span class="scanner-title" id="scanner-title-text">Scan Picture</span>
       <button class="close-btn" onclick="closeScanner()">×</button>
     </div>
     <div id="video-wrap">
@@ -107,8 +112,8 @@ h1{font-size:22px;font-weight:500;margin-bottom:.75rem}
       <canvas id="snap-canvas" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:8px"></canvas>
       <div class="viewfinder" id="viewfinder"><div style="border:2px solid rgba(255,255,255,.7);border-radius:8px;width:240px;height:160px"></div></div>
     </div>
-    <div id="scan-status">Point camera at product and tap Identify</div>
-    <button id="capture-btn" onclick="captureAndIdentify()" style="width:100%;padding:10px;border-radius:8px;border:.5px solid var(--border);background:var(--blue-bg);color:var(--blue-text);font-size:14px;cursor:pointer;font-family:inherit;margin-bottom:1rem">📷 Identify Product</button>
+    <div id="scan-status">Ready</div>
+    <button id="capture-btn" onclick="captureAndIdentify()" style="display:none;width:100%;padding:10px;border-radius:8px;border:.5px solid var(--border);background:var(--blue-bg);color:var(--blue-text);font-size:14px;cursor:pointer;font-family:inherit;margin-bottom:1rem">📷 Identify Product</button>
     <div class="or-divider">Or type product name manually:</div>
     <div class="manual-row">
       <input class="manual-input" id="manual-input" placeholder="e.g. Heinz Baked Beans" onkeydown="if(event.key==='Enter')manualAdd()">
@@ -317,19 +322,32 @@ function setTab(i){
   if(i===2&&!recipesCache.almost)loadRecipes("almost");
 }
 
-function openScanner(){
+let scanMode = "image";
+
+function openScanner(mode){
+  scanMode = mode || "image";
   document.getElementById("scanner-overlay").classList.add("open");
   document.getElementById("snap-canvas").style.display="none";
   document.getElementById("video").style.display="block";
   document.getElementById("viewfinder").style.display="flex";
-  document.getElementById("capture-btn").disabled=false;
-  document.getElementById("capture-btn").textContent="📷 Identify Product";
+  const captureBtn = document.getElementById("capture-btn");
+  captureBtn.onclick = captureAndIdentify;
+  if(scanMode==="image"){
+    document.getElementById("scanner-title-text").textContent="Scan Picture";
+    captureBtn.style.display="block";
+    captureBtn.disabled=false;
+    captureBtn.textContent="📷 Identify Product";
+    document.getElementById("scan-status").textContent="Point camera at product and tap Identify";
+  } else {
+    document.getElementById("scanner-title-text").textContent="Scan Barcode";
+    captureBtn.style.display="none";
+    document.getElementById("scan-status").textContent="Point camera at barcode";
+  }
   if(location.protocol==="file:"){
     document.getElementById("scan-status").textContent="Camera blocked: open via HTTPS for this to work on iPhone.";
     return;
   }
-  document.getElementById("scan-status").textContent="Point camera at product and tap Identify";
-  startCamera();
+  startCamera(mode);
 }
 
 function closeScanner(){
@@ -341,19 +359,51 @@ function stopCamera(){
   if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
 }
 
-function startCamera(){
+function startCamera(mode){
   navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}}})
     .then(s=>{
       stream=s;
       const v=document.getElementById("video");
       v.srcObject=s;
+      if(mode==="barcode") startBarcodeDecoding();
     })
     .catch(()=>{
       document.getElementById("scan-status").textContent="Camera unavailable. Use manual entry below.";
     });
 }
 
-async function captureAndIdentify(){
+function startBarcodeDecoding(){
+  if(typeof ZXing==="undefined"){setTimeout(()=>startBarcodeDecoding(),500);return;}
+  try{
+    codeReader=new ZXing.BrowserMultiFormatReader();
+    codeReader.decodeFromVideoDevice(null,"video",(result,err)=>{
+      if(result){
+        stopCamera();
+        handleBarcodeResult(result.getText());
+      }
+    });
+  }catch(e){
+    document.getElementById("scan-status").textContent="Barcode scanner unavailable. Use manual entry.";
+  }
+}
+
+async function handleBarcodeResult(code){
+  closeScanner();
+  const name=await lookupBarcode(code);
+  if(name){
+    const ex=pantry.find(i=>i.barcode===code);
+    if(ex){pantry=pantry.map(i=>i.id===ex.id?{...i,qty:i.qty+1}:i);showFeedback("+1 "+name);}
+    else{pantry.push({id:Date.now(),name,qty:1,barcode:code});showFeedback("Added: "+name);}
+  } else {
+    const label=prompt("Product not found for barcode "+code+"\nEnter product name:");
+    if(label){pantry.push({id:Date.now(),name:label,qty:1,barcode:code});showFeedback("Added: "+label);}
+  }
+  render();
+  await saveItems();
+  recipesCache={now:null,almost:null};
+}
+
+
   const video=document.getElementById("video");
   const canvas=document.getElementById("snap-canvas");
   const btn=document.getElementById("capture-btn");
