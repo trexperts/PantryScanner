@@ -104,13 +104,15 @@ h1{font-size:22px;font-weight:500;margin-bottom:.75rem}
     </div>
     <div id="video-wrap">
       <video id="video" autoplay playsinline muted></video>
-      <div class="viewfinder"><div class="viewfinder-rect"></div></div>
+      <canvas id="snap-canvas" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:8px"></canvas>
+      <div class="viewfinder" id="viewfinder"><div style="border:2px solid rgba(255,255,255,.7);border-radius:8px;width:240px;height:160px"></div></div>
     </div>
-    <div id="scan-status">Starting camera…</div>
-    <div class="or-divider">Or enter barcode manually:</div>
+    <div id="scan-status">Point camera at product and tap Identify</div>
+    <button id="capture-btn" onclick="captureAndIdentify()" style="width:100%;padding:10px;border-radius:8px;border:.5px solid var(--border);background:var(--blue-bg);color:var(--blue-text);font-size:14px;cursor:pointer;font-family:inherit;margin-bottom:1rem">📷 Identify Product</button>
+    <div class="or-divider">Or type product name manually:</div>
     <div class="manual-row">
-      <input class="manual-input" id="manual-input" placeholder="e.g. 049000028911" onkeydown="if(event.key==='Enter')manualAdd()">
-      <button class="manual-btn" onclick="manualAdd()">Add</button>
+      <input class="manual-input" id="manual-input" placeholder="e.g. Heinz Baked Beans" onkeydown="if(event.key==='Enter')manualAdd()">
+      <button class="manual-btn" onclick="manualAddName()">Add</button>
     </div>
   </div>
 </div>
@@ -317,11 +319,16 @@ function setTab(i){
 
 function openScanner(){
   document.getElementById("scanner-overlay").classList.add("open");
+  document.getElementById("snap-canvas").style.display="none";
+  document.getElementById("video").style.display="block";
+  document.getElementById("viewfinder").style.display="flex";
+  document.getElementById("capture-btn").disabled=false;
+  document.getElementById("capture-btn").textContent="📷 Identify Product";
   if(location.protocol==="file:"){
-    document.getElementById("scan-status").textContent="Camera blocked: open via HTTPS for scanning to work on iPhone.";
+    document.getElementById("scan-status").textContent="Camera blocked: open via HTTPS for this to work on iPhone.";
     return;
   }
-  document.getElementById("scan-status").textContent="Starting camera…";
+  document.getElementById("scan-status").textContent="Point camera at product and tap Identify";
   startCamera();
 }
 
@@ -331,29 +338,95 @@ function closeScanner(){
 }
 
 function stopCamera(){
-  if(codeReader){try{codeReader.reset();}catch(e){}}
   if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
 }
 
 function startCamera(){
-  if(typeof ZXing==="undefined"){setTimeout(startCamera,500);return;}
+  navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"},width:{ideal:1280},height:{ideal:720}}})
+    .then(s=>{
+      stream=s;
+      const v=document.getElementById("video");
+      v.srcObject=s;
+    })
+    .catch(()=>{
+      document.getElementById("scan-status").textContent="Camera unavailable. Use manual entry below.";
+    });
+}
+
+async function captureAndIdentify(){
+  const video=document.getElementById("video");
+  const canvas=document.getElementById("snap-canvas");
+  const btn=document.getElementById("capture-btn");
+  // draw frame to canvas
+  canvas.width=video.videoWidth||640;
+  canvas.height=video.videoHeight||480;
+  const ctx=canvas.getContext("2d");
+  ctx.drawImage(video,0,0,canvas.width,canvas.height);
+  // show snapshot, hide live feed
+  video.style.display="none";
+  document.getElementById("viewfinder").style.display="none";
+  canvas.style.display="block";
+  stopCamera();
+  btn.disabled=true;
+  btn.textContent="Identifying…";
+  document.getElementById("scan-status").textContent="Asking AI to identify product…";
+  // get base64
+  const base64=canvas.toDataURL("image/jpeg",.85).split(",")[1];
   try{
-    codeReader=new ZXing.BrowserMultiFormatReader();
-    codeReader.decodeFromConstraints(
-      {video:{facingMode:{ideal:"environment"}}},
-      "video",
-      (result,err)=>{
-        if(result){stopCamera();handleScan(result.getText());}
-        else if(err&&!(err instanceof ZXing.NotFoundException)){
-          document.getElementById("scan-status").textContent="Camera error. Use manual entry.";
-        } else {
-          document.getElementById("scan-status").textContent="Point camera at barcode";
-        }
-      }
-    );
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:ANTHROPIC_MODEL,
+        max_tokens:200,
+        messages:[{role:"user",content:[
+          {type:"image",source:{type:"base64",media_type:"image/jpeg",data:base64}},
+          {type:"text",text:"This is a photo of a food or grocery product. Reply with ONLY the product name (brand + product, e.g. 'Heinz Baked Beans' or 'Quaker Oats'). If you cannot identify a food product, reply with exactly: UNKNOWN"}
+        ]}]
+      })
+    });
+    const data=await res.json();
+    const name=(data.content?.find(b=>b.type==="text")?.text||"").trim();
+    if(!name||name==="UNKNOWN"){
+      document.getElementById("scan-status").textContent="Could not identify. Try manual entry below.";
+      btn.disabled=false;
+      btn.textContent="📷 Try Again";
+      // restart camera on retry
+      btn.onclick=()=>{
+        canvas.style.display="none";
+        video.style.display="block";
+        document.getElementById("viewfinder").style.display="flex";
+        document.getElementById("scan-status").textContent="Point camera at product and tap Identify";
+        btn.onclick=captureAndIdentify;
+        startCamera();
+      };
+    } else {
+      closeScanner();
+      const existing=pantry.find(i=>i.name.toLowerCase()===name.toLowerCase());
+      if(existing){pantry=pantry.map(i=>i.id===existing.id?{...i,qty:i.qty+1}:i);showFeedback("+1 "+name);}
+      else{pantry.push({id:Date.now(),name,qty:1,barcode:""});showFeedback("Added: "+name);}
+      render();
+      await saveItems();
+      recipesCache={now:null,almost:null};
+    }
   }catch(e){
-    document.getElementById("scan-status").textContent="Camera unavailable. Use manual entry below.";
+    document.getElementById("scan-status").textContent="Error identifying product. Try again.";
+    btn.disabled=false;
+    btn.textContent="📷 Try Again";
   }
+}
+
+function manualAddName(){
+  const v=document.getElementById("manual-input").value.trim();
+  if(!v)return;
+  closeScanner();
+  const existing=pantry.find(i=>i.name.toLowerCase()===v.toLowerCase());
+  if(existing){pantry=pantry.map(i=>i.id===existing.id?{...i,qty:i.qty+1}:i);showFeedback("+1 "+v);}
+  else{pantry.push({id:Date.now(),name:v,qty:1,barcode:""});showFeedback("Added: "+v);}
+  document.getElementById("manual-input").value="";
+  render();
+  saveItems();
+  recipesCache={now:null,almost:null};
 }
 
 async function loadRecipes(mode){
