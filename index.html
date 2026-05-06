@@ -10,7 +10,18 @@
 :root{--bg:#fff;--bg2:#f5f5f0;--bg3:#eeeee8;--text:#111;--text2:#666;--text3:#999;--border:rgba(0,0,0,0.12);--green-bg:#eaf3de;--green-text:#3b6d11;--green-border:#a0c96a;--amber-bg:#faeeda;--amber-text:#854f0b;--amber-border:#efb245;--blue-bg:#e6f1fb;--blue-text:#185fa5;--blue-border:#7ab8e8}
 @media(prefers-color-scheme:dark){:root{--bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;--text:#f2f2f7;--text2:#aeaeb2;--text3:#636366;--border:rgba(255,255,255,0.12);--green-bg:#1a3010;--green-text:#a0c96a;--green-border:#3b6d11;--amber-bg:#2d1e00;--amber-text:#efb245;--amber-border:#854f0b;--blue-bg:#0d2140;--blue-text:#7ab8e8;--blue-border:#185fa5}}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);max-width:600px;margin:0 auto;padding:1rem 1rem 5rem;font-size:16px}
-h1{font-size:22px;font-weight:500;margin-bottom:.75rem}.sub{font-size:13px;color:var(--text2);margin-bottom:1.25rem}.selector-row{display:flex;align-items:center;gap:8px;margin-bottom:.75rem;flex-wrap:wrap}.selector-row select{flex:1;padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit;min-width:0}.selector-row button{padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap}.tabs{display:flex;gap:8px;margin-bottom:1.25rem}.tab{flex:1;padding:8px 0;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;font-family:inherit}.tab.active{border:1.5px solid var(--blue-border);background:var(--blue-bg);color:var(--blue-text);font-weight:500}.scan-btn{width:100%;padding:11px;border-radius:10px;border:.5px solid var(--border);background:var(--bg2);font-size:14px;cursor:pointer;color:var(--text);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:1rem;font-family:inherit}.item{background:var(--bg);border:.5px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}.item.low{border-color:var(--amber-border)}.item-name{flex:1;font-size:14px;font-weight:500}.low-label{font-size:11px;color:var(--amber-text);margin-top:2px}.qty-btn,.del-btn{width:28px;height:28px;border-radius:6px;border:.5px solid var(--border);background:var(--bg2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);font-family:inherit;flex-shrink:0}.del-btn{font-size:14px;color:var(--text2);margin-left:4px}.qty{font-size:14px;font-weight:500;min-width:20px;text-align:center}.alert{border-radius:10px;padding:10px 14px;margin-bottom:1rem;font-size:13px}.alert.warn{background:var(--amber-bg);border:.5px solid var(--amber-border);color:var(--amber-text)}.alert.success{background:var(--green-bg);border:.5px solid var(--green-border);color:var(--green-text)}.alert.info{background:var(--blue-bg);border:.5px solid var(--blue-border);color:var(--blue-text)}.recipe-card{background:var(--bg);border:.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px}.recipe-name{font-size:15px;font-weight:500;margin-bottom:6px}.recipe-desc{font-size:13px;color:var(--text2);margin-bottom:10px}.tags{display:flex;flex-wrap:wrap;gap:6px}.tag{font-size:11px;padding:3px 8px;border-radius:6px}.tag.have{background:var(--green-bg);color:var(--green-text);border:.5px solid var(--green-border)}.tag.need{background:var(--amber-bg);color:var(--amber-text);border:.5px solid var(--amber-border)}.refresh-btn{font-size:12px;color:var(--text2);background:none;border:none;cursor:pointer;margin-bottom:1rem;padding:0;font-family:inherit}.empty{text-align:center;color:var(--text3);font-size:14px;padding:2rem 0}.loading{text-align:center;color:var(--text2);font-size:14px;padding:3rem 0}#scanner-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center}.scanner-box{background:var(--bg);border-radius:16px;padding:1.5rem;width:340px;max-width:92vw}#scanner-overlay.open{display:flex}.scanner-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}.scanner-title{font-size:18px;font-weight:500}.close-btn{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text2);line-height:1;font-family:inherit}#video-wrap{background:#000;border-radius:8px;overflow:hidden;height:220px;position:relative;margin-bottom:1rem}#video,#snap-canvas{width:100%;height:100%;object-fit:cover;display:block}.viewfinder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}.viewfinder-rect{border:2px solid rgba(255,255,255,.7);border-radius:8px;width:240px;height:160px}#scan-status{font-size:13px;color:var(--text2);text-align:center;margin-bottom:1rem;min-height:18px}.manual-row{display:flex;gap:8px}.manual-input{flex:1;padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit}.manual-btn,.capture-btn{padding:8px 16px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);cursor:pointer;font-size:14px;color:var(--text);font-family:inherit}.capture-btn{width:100%;padding:10px;background:var(--blue-bg);color:var(--blue-text);margin-bottom:1rem}.or-divider{font-size:12px;color:var(--text3);margin-bottom:8px}.matches{margin-bottom:1rem;display:none}.match-btn{width:100%;padding:9px 10px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;text-align:left;margin-bottom:6px;font-family:inherit}.small-note{font-size:11px;color:var(--text3);margin-top:6px;line-height:1.35}
+h1{font-size:22px;font-weight:500;margin-bottom:.75rem}.sub{font-size:13px;color:var(--text2);margin-bottom:1.25rem}.selector-row{display:flex;align-items:center;gap:8px;margin-bottom:.75rem;flex-wrap:wrap}.selector-row select{flex:1;padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit;min-width:0}.selector-row button{padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap}.tabs{display:flex;gap:8px;margin-bottom:1.25rem}.tab{flex:1;padding:8px 0;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;font-family:inherit}.tab.active{border:1.5px solid var(--blue-border);background:var(--blue-bg);color:var(--blue-text);font-weight:500}.scan-btn{width:100%;padding:11px;border-radius:10px;border:.5px solid var(--border);background:var(--bg2);font-size:14px;cursor:pointer;color:var(--text);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:1rem;font-family:inherit}
+
+/* Item row with image thumbnail */
+.item{background:var(--bg);border:.5px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.item.low{border-color:var(--amber-border)}
+.item-thumb{width:44px;height:44px;border-radius:7px;object-fit:cover;flex-shrink:0;background:var(--bg2);border:.5px solid var(--border)}
+.item-thumb-placeholder{width:44px;height:44px;border-radius:7px;flex-shrink:0;background:var(--bg2);border:.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--text3)}
+.item-name{flex:1;font-size:14px;font-weight:500}.low-label{font-size:11px;color:var(--amber-text);margin-top:2px}.qty-btn,.del-btn{width:28px;height:28px;border-radius:6px;border:.5px solid var(--border);background:var(--bg2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);font-family:inherit;flex-shrink:0}.del-btn{font-size:14px;color:var(--text2);margin-left:4px}.qty{font-size:14px;font-weight:500;min-width:20px;text-align:center}.alert{border-radius:10px;padding:10px 14px;margin-bottom:1rem;font-size:13px}.alert.warn{background:var(--amber-bg);border:.5px solid var(--amber-border);color:var(--amber-text)}.alert.success{background:var(--green-bg);border:.5px solid var(--green-border);color:var(--green-text)}.alert.info{background:var(--blue-bg);border:.5px solid var(--blue-border);color:var(--blue-text)}.recipe-card{background:var(--bg);border:.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px}.recipe-name{font-size:15px;font-weight:500;margin-bottom:6px}.recipe-desc{font-size:13px;color:var(--text2);margin-bottom:10px}.tags{display:flex;flex-wrap:wrap;gap:6px}.tag{font-size:11px;padding:3px 8px;border-radius:6px}.tag.have{background:var(--green-bg);color:var(--green-text);border:.5px solid var(--green-border)}.tag.need{background:var(--amber-bg);color:var(--amber-text);border:.5px solid var(--amber-border)}.refresh-btn{font-size:12px;color:var(--text2);background:none;border:none;cursor:pointer;margin-bottom:1rem;padding:0;font-family:inherit}.empty{text-align:center;color:var(--text3);font-size:14px;padding:2rem 0}.loading{text-align:center;color:var(--text2);font-size:14px;padding:3rem 0}#scanner-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center}.scanner-box{background:var(--bg);border-radius:16px;padding:1.5rem;width:340px;max-width:92vw}#scanner-overlay.open{display:flex}.scanner-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}.scanner-title{font-size:18px;font-weight:500}.close-btn{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text2);line-height:1;font-family:inherit}#video-wrap{background:#000;border-radius:8px;overflow:hidden;height:220px;position:relative;margin-bottom:1rem}#video,#snap-canvas{width:100%;height:100%;object-fit:cover;display:block}.viewfinder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}.viewfinder-rect{border:2px solid rgba(255,255,255,.7);border-radius:8px;width:240px;height:160px}#scan-status{font-size:13px;color:var(--text2);text-align:center;margin-bottom:1rem;min-height:18px}.manual-row{display:flex;gap:8px}.manual-input{flex:1;padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit}.manual-btn,.capture-btn{padding:8px 16px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);cursor:pointer;font-size:14px;color:var(--text);font-family:inherit}.capture-btn{width:100%;padding:10px;background:var(--blue-bg);color:var(--blue-text);margin-bottom:1rem}.or-divider{font-size:12px;color:var(--text3);margin-bottom:8px}.matches{margin-bottom:1rem;display:none}.match-btn{width:100%;padding:9px 10px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;text-align:left;margin-bottom:6px;font-family:inherit;display:flex;align-items:center;gap:8px}
+/* Match button thumbnail */
+.match-thumb{width:32px;height:32px;border-radius:5px;object-fit:cover;flex-shrink:0;background:var(--bg3)}
+.match-label{flex:1;text-align:left}
+.small-note{font-size:11px;color:var(--text3);margin-top:6px;line-height:1.35}
 </style>
 </head>
 <body>
@@ -194,6 +205,14 @@ async function saveItems(){
   }catch(e){syncStatus("Error saving. Check connection.");}
 }
 
+// --- Render with image thumbnails ---
+function itemThumbHtml(item){
+  if(item.image){
+    return `<img class="item-thumb" src="${escapeHtml(item.image)}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="item-thumb-placeholder" style="display:none">🥫</div>`;
+  }
+  return `<div class="item-thumb-placeholder">🥫</div>`;
+}
+
 function render(){
   document.getElementById("item-count").textContent=currentPantry.name+" — "+pantry.length+" items";
   const low=pantry.filter(i=>i.qty<=LOW);
@@ -204,6 +223,7 @@ function render(){
   if(!pantry.length){list.innerHTML='<div class="empty">No items yet. Scan a barcode to get started.</div>';return;}
   list.innerHTML=pantry.map(item=>`
     <div class="item${item.qty<=LOW?" low":""}">
+      ${itemThumbHtml(item)}
       <div style="flex:1">
         <div class="item-name">${escapeHtml(item.name)}</div>
         ${item.qty<=LOW?'<div class="low-label">Low stock</div>':""}
@@ -310,12 +330,21 @@ function startBarcodeDecoding(){
   }
 }
 
+// --- Updated: returns { name, image } ---
 async function lookupBarcode(code){
   try{
     const r=await fetch(`https://world.openfoodfacts.org/api/v0/product/${encodeURIComponent(code)}.json`);
     const d=await r.json();
     if(d.status===1&&d.product){
-      return cleanProductName(d.product.product_name || d.product.product_name_en || d.product.brands || "");
+      const name = cleanProductName(d.product.product_name || d.product.product_name_en || d.product.brands || "");
+      // Prefer front image, then any available image
+      const image =
+        d.product.image_front_small_url ||
+        d.product.image_front_url ||
+        d.product.image_small_url ||
+        d.product.image_url ||
+        null;
+      return { name, image };
     }
   }catch(e){}
   return null;
@@ -323,13 +352,13 @@ async function lookupBarcode(code){
 
 async function handleBarcodeResult(code){
   closeScanner();
-  const name=await lookupBarcode(code);
-  if(name){
-    addOrIncrementItem(name, code);
-    showFeedback("Added: "+name);
+  const result = await lookupBarcode(code);
+  if(result && result.name){
+    addOrIncrementItem(result.name, code, result.image);
+    showFeedback("Added: " + result.name);
   } else {
     const label=prompt("Product not found for barcode "+code+"\nEnter product name:");
-    if(label){addOrIncrementItem(label, code);showFeedback("Added: "+label);}
+    if(label){ addOrIncrementItem(label, code, null); showFeedback("Added: "+label); }
   }
   render();
   await saveItems();
@@ -381,11 +410,24 @@ async function captureAndSearchLabel(){
 
     status.textContent="Choose the best match:";
     matches.style.display="block";
+    // Build match buttons including product images
     matches.innerHTML = products.slice(0,5).map((p,idx)=>{
       const name = cleanProductName(p.product_name || p.product_name_en || p.generic_name || "Unknown product");
       const brand = cleanProductName(p.brands || "");
       const label = brand && !name.toLowerCase().includes(brand.toLowerCase()) ? `${brand} ${name}` : name;
-      return `<button class="match-btn" onclick="chooseProductMatch('${escapeJs(label)}')">${escapeHtml(label)}</button>`;
+      const image =
+        p.image_front_small_url ||
+        p.image_front_url ||
+        p.image_small_url ||
+        p.image_url ||
+        null;
+      const imgHtml = image
+        ? `<img class="match-thumb" src="${escapeHtml(image)}" alt="" onerror="this.style.display='none'">`
+        : `<div class="match-thumb" style="display:flex;align-items:center;justify-content:center;font-size:16px">🥫</div>`;
+      return `<button class="match-btn" onclick="chooseProductMatch('${escapeJs(label)}','${escapeJs(image||'')}')">
+        ${imgHtml}
+        <span class="match-label">${escapeHtml(label)}</span>
+      </button>`;
     }).join("");
 
     resetPhotoButton("📷 Try Again");
@@ -411,9 +453,9 @@ function resetPhotoButton(text){
   };
 }
 
-async function chooseProductMatch(name){
+async function chooseProductMatch(name, image){
   closeScanner();
-  addOrIncrementItem(name, "");
+  addOrIncrementItem(name, "", image || null);
   render();
   await saveItems();
   recipesCache={now:null,almost:null};
@@ -463,7 +505,8 @@ function manualAddName(){
   const v=document.getElementById("manual-input").value.trim();
   if(!v)return;
   closeScanner();
-  addOrIncrementItem(v, "");
+  // No image available for manual entry
+  addOrIncrementItem(v, "", null);
   document.getElementById("manual-input").value="";
   render();
   saveItems();
@@ -471,15 +514,26 @@ function manualAddName(){
   showFeedback("Added: "+v);
 }
 
-function addOrIncrementItem(name, barcode){
+// --- Updated: accepts image parameter ---
+function addOrIncrementItem(name, barcode, image){
   const clean = cleanProductName(name);
   const existing = pantry.find(i =>
     (barcode && i.barcode === barcode) || i.name.toLowerCase() === clean.toLowerCase()
   );
   if(existing){
-    pantry = pantry.map(i=>i.id===existing.id?{...i,qty:i.qty+1}:i);
+    // Update image if we now have one and didn't before
+    pantry = pantry.map(i => i.id===existing.id
+      ? {...i, qty:i.qty+1, image: i.image || image || null}
+      : i
+    );
   } else {
-    pantry.push({id:Date.now(),name:clean,qty:1,barcode:barcode||""});
+    pantry.push({
+      id: Date.now(),
+      name: clean,
+      qty: 1,
+      barcode: barcode || "",
+      image: image || null
+    });
   }
 }
 
@@ -494,7 +548,6 @@ async function loadRecipes(mode){
   const el=document.getElementById("recipes-"+mode);
   if(!pantry.length){el.innerHTML='<div class="empty">Add items to your pantry first.</div>';return;}
 
-  // No LLM here. This is a simple local fallback based on common pantry combinations.
   const names = pantry.map(i=>i.name.toLowerCase());
   const has = term => names.some(n=>n.includes(term));
   const ideas = [];
