@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Recipes</title>
+<link rel="stylesheet" href="shared.css">
+<style>
+.recipe-tabs{display:flex;gap:8px;margin-bottom:1.25rem}
+.recipe-tab{flex:1;padding:9px 0;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;text-align:center}
+.recipe-tab.active{border:1.5px solid var(--blue-border);background:var(--blue-bg);color:var(--blue-text);font-weight:500}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <span class="page-title">🍳 Recipes</span>
+</div>
+<div class="page-sub" id="item-count">Loading…</div>
+
+<div id="sync-status" class="alert info" style="display:none"></div>
+
+<div class="recipe-tabs">
+  <button class="recipe-tab active" id="tab-now-btn"    onclick="setRecipeTab('now')">Make Now</button>
+  <button class="recipe-tab"        id="tab-almost-btn" onclick="setRecipeTab('almost')">Almost There</button>
+</div>
+
+<button class="refresh-btn" onclick="refreshTab()">Refresh suggestions ↺</button>
+
+<div id="tab-now"></div>
+<div id="tab-almost" style="display:none"></div>
+
+<nav id="bottom-nav"></nav>
+
+<script src="shared.js"></script>
+<script>
+let activeTab = "now";
+const cache = { now: null, almost: null };
+
+function onPantrySwitch() {
+  cache.now = null; cache.almost = null;
+  document.getElementById("item-count").textContent = currentPantry.name + " — " + pantry.length + " items";
+  loadRecipes(activeTab);
+}
+
+function setRecipeTab(tab) {
+  activeTab = tab;
+  document.getElementById("tab-now-btn").classList.toggle("active", tab === "now");
+  document.getElementById("tab-almost-btn").classList.toggle("active", tab === "almost");
+  document.getElementById("tab-now").style.display = tab === "now" ? "block" : "none";
+  document.getElementById("tab-almost").style.display = tab === "almost" ? "block" : "none";
+  if (!cache[tab]) loadRecipes(tab);
+}
+
+function refreshTab() {
+  cache[activeTab] = null;
+  loadRecipes(activeTab);
+}
+
+function loadRecipes(mode) {
+  const el = document.getElementById("tab-" + mode);
+  if (!pantry.length) {
+    el.innerHTML = '<div class="empty">Add items to your pantry first.</div>';
+    return;
+  }
+
+  const names = pantry.map(i => i.name.toLowerCase());
+  const has = term => names.some(n => n.includes(term));
+  const ideas = [];
+
+  if (has("pasta") || has("spaghetti") || has("noodle"))
+    ideas.push({ name: "Simple Pantry Pasta", description: "Use pasta with any sauce, canned tomatoes, oil, or seasoning you have on hand.", ingredients: ["pasta"] });
+  if (has("rice"))
+    ideas.push({ name: "Rice Bowl", description: "Build a bowl with rice plus canned beans, vegetables, tuna, chicken, or sauce.", ingredients: ["rice"] });
+  if (has("beans"))
+    ideas.push({ name: "Bean Bowl", description: "Use beans with rice, tortillas, toast, salsa, or seasoning.", ingredients: ["beans"] });
+  if (has("oats") || has("oatmeal"))
+    ideas.push({ name: "Oatmeal", description: "Make oats with milk or water, then add fruit, nuts, honey, or cinnamon if available.", ingredients: ["oats"] });
+  if (has("tuna"))
+    ideas.push({ name: "Tuna Toast or Tuna Bowl", description: "Use tuna with bread, crackers, rice, pasta, mayo, mustard, or seasoning.", ingredients: ["tuna"] });
+
+  if (mode === "almost") {
+    ideas.push({ name: "Pasta with Sauce", description: "You may only need sauce, canned tomatoes, or cheese.", have: names.slice(0, 3), missing: ["sauce or tomatoes"] });
+    ideas.push({ name: "Rice and Beans", description: "You may only need rice, beans, salsa, or seasoning depending on what is missing.", have: names.slice(0, 3), missing: ["rice or beans"] });
+  }
+
+  const final = ideas.slice(0, 4);
+  if (!final.length) {
+    el.innerHTML = '<div class="empty">No recipe ideas yet. Add more pantry staples.</div>';
+    return;
+  }
+
+  el.innerHTML = final.map(r => `
+    <div class="recipe-card">
+      <div class="recipe-name">${escapeHtml(r.name)}</div>
+      <div class="recipe-desc">${escapeHtml(r.description)}</div>
+      <div class="tags">
+        ${(mode === "now" ? (r.ingredients || []) : (r.have || [])).map(ing => `<span class="tag have">${escapeHtml(ing)}</span>`).join("")}
+        ${mode === "almost" ? (r.missing || []).map(ing => `<span class="tag need">Need: ${escapeHtml(ing)}</span>`).join("") : ""}
+      </div>
+    </div>`).join("");
+
+  cache[mode] = true;
+}
+
+// ── Boot ───────────────────────────────────────────────────────────────────
+renderNav("recipes.html");
+loadPantries(() => {
+  document.getElementById("item-count").textContent = currentPantry.name + " — " + pantry.length + " items";
+  loadRecipes("now");
+});
+</script>
+</body>
+</html>
