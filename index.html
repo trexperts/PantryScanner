@@ -10,51 +10,7 @@
 :root{--bg:#fff;--bg2:#f5f5f0;--bg3:#eeeee8;--text:#111;--text2:#666;--text3:#999;--border:rgba(0,0,0,0.12);--green-bg:#eaf3de;--green-text:#3b6d11;--green-border:#a0c96a;--amber-bg:#faeeda;--amber-text:#854f0b;--amber-border:#efb245;--blue-bg:#e6f1fb;--blue-text:#185fa5;--blue-border:#7ab8e8}
 @media(prefers-color-scheme:dark){:root{--bg:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;--text:#f2f2f7;--text2:#aeaeb2;--text3:#636366;--border:rgba(255,255,255,0.12);--green-bg:#1a3010;--green-text:#a0c96a;--green-border:#3b6d11;--amber-bg:#2d1e00;--amber-text:#efb245;--amber-border:#854f0b;--blue-bg:#0d2140;--blue-text:#7ab8e8;--blue-border:#185fa5}}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);max-width:600px;margin:0 auto;padding:1rem 1rem 5rem;font-size:16px}
-h1{font-size:22px;font-weight:500;margin-bottom:.75rem}
-.sub{font-size:13px;color:var(--text2);margin-bottom:1.25rem}
-.selector-row{display:flex;align-items:center;gap:8px;margin-bottom:.75rem;flex-wrap:wrap}
-.selector-row select{flex:1;padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit;min-width:0}
-.selector-row button{padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap}
-.tabs{display:flex;gap:8px;margin-bottom:1.25rem}
-.tab{flex:1;padding:8px 0;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;font-family:inherit}
-.tab.active{border:1.5px solid var(--blue-border);background:var(--blue-bg);color:var(--blue-text);font-weight:500}
-.scan-btn{width:100%;padding:11px;border-radius:10px;border:.5px solid var(--border);background:var(--bg2);font-size:14px;cursor:pointer;color:var(--text);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:1rem;font-family:inherit}
-.item{background:var(--bg);border:.5px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
-.item.low{border-color:var(--amber-border)}
-.item-name{flex:1;font-size:14px;font-weight:500}
-.low-label{font-size:11px;color:var(--amber-text);margin-top:2px}
-.qty-btn{width:28px;height:28px;border-radius:6px;border:.5px solid var(--border);background:var(--bg2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);font-family:inherit;flex-shrink:0}
-.del-btn{width:28px;height:28px;border-radius:6px;border:.5px solid var(--border);background:var(--bg2);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);font-family:inherit;flex-shrink:0;margin-left:4px}
-.qty{font-size:14px;font-weight:500;min-width:20px;text-align:center}
-.alert{border-radius:10px;padding:10px 14px;margin-bottom:1rem;font-size:13px}
-.alert.warn{background:var(--amber-bg);border:.5px solid var(--amber-border);color:var(--amber-text)}
-.alert.success{background:var(--green-bg);border:.5px solid var(--green-border);color:var(--green-text)}
-.alert.info{background:var(--blue-bg);border:.5px solid var(--blue-border);color:var(--blue-text)}
-.recipe-card{background:var(--bg);border:.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px}
-.recipe-name{font-size:15px;font-weight:500;margin-bottom:6px}
-.recipe-desc{font-size:13px;color:var(--text2);margin-bottom:10px}
-.tags{display:flex;flex-wrap:wrap;gap:6px}
-.tag{font-size:11px;padding:3px 8px;border-radius:6px}
-.tag.have{background:var(--green-bg);color:var(--green-text);border:.5px solid var(--green-border)}
-.tag.need{background:var(--amber-bg);color:var(--amber-text);border:.5px solid var(--amber-border)}
-.refresh-btn{font-size:12px;color:var(--text2);background:none;border:none;cursor:pointer;margin-bottom:1rem;padding:0;font-family:inherit}
-.empty{text-align:center;color:var(--text3);font-size:14px;padding:2rem 0}
-.loading{text-align:center;color:var(--text2);font-size:14px;padding:3rem 0}
-#scanner-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center}
-#scanner-overlay.open{display:flex}
-.scanner-box{background:var(--bg);border-radius:16px;padding:1.5rem;width:340px;max-width:92vw}
-.scanner-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
-.scanner-title{font-size:18px;font-weight:500}
-.close-btn{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text2);line-height:1;font-family:inherit}
-#video-wrap{background:#000;border-radius:8px;overflow:hidden;height:220px;position:relative;margin-bottom:1rem}
-#video{width:100%;height:100%;object-fit:cover;display:block}
-.viewfinder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
-.viewfinder-rect{border:2px solid rgba(255,255,255,.7);border-radius:4px;width:220px;height:80px}
-#scan-status{font-size:13px;color:var(--text2);text-align:center;margin-bottom:1rem;min-height:18px}
-.manual-row{display:flex;gap:8px}
-.manual-input{flex:1;padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit}
-.manual-btn{padding:8px 16px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);cursor:pointer;font-size:14px;color:var(--text);font-family:inherit}
-.or-divider{font-size:12px;color:var(--text3);margin-bottom:8px}
+h1{font-size:22px;font-weight:500;margin-bottom:.75rem}.sub{font-size:13px;color:var(--text2);margin-bottom:1.25rem}.selector-row{display:flex;align-items:center;gap:8px;margin-bottom:.75rem;flex-wrap:wrap}.selector-row select{flex:1;padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit;min-width:0}.selector-row button{padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap}.tabs{display:flex;gap:8px;margin-bottom:1.25rem}.tab{flex:1;padding:8px 0;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;font-family:inherit}.tab.active{border:1.5px solid var(--blue-border);background:var(--blue-bg);color:var(--blue-text);font-weight:500}.scan-btn{width:100%;padding:11px;border-radius:10px;border:.5px solid var(--border);background:var(--bg2);font-size:14px;cursor:pointer;color:var(--text);display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:1rem;font-family:inherit}.item{background:var(--bg);border:.5px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}.item.low{border-color:var(--amber-border)}.item-name{flex:1;font-size:14px;font-weight:500}.low-label{font-size:11px;color:var(--amber-text);margin-top:2px}.qty-btn,.del-btn{width:28px;height:28px;border-radius:6px;border:.5px solid var(--border);background:var(--bg2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);font-family:inherit;flex-shrink:0}.del-btn{font-size:14px;color:var(--text2);margin-left:4px}.qty{font-size:14px;font-weight:500;min-width:20px;text-align:center}.alert{border-radius:10px;padding:10px 14px;margin-bottom:1rem;font-size:13px}.alert.warn{background:var(--amber-bg);border:.5px solid var(--amber-border);color:var(--amber-text)}.alert.success{background:var(--green-bg);border:.5px solid var(--green-border);color:var(--green-text)}.alert.info{background:var(--blue-bg);border:.5px solid var(--blue-border);color:var(--blue-text)}.recipe-card{background:var(--bg);border:.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px}.recipe-name{font-size:15px;font-weight:500;margin-bottom:6px}.recipe-desc{font-size:13px;color:var(--text2);margin-bottom:10px}.tags{display:flex;flex-wrap:wrap;gap:6px}.tag{font-size:11px;padding:3px 8px;border-radius:6px}.tag.have{background:var(--green-bg);color:var(--green-text);border:.5px solid var(--green-border)}.tag.need{background:var(--amber-bg);color:var(--amber-text);border:.5px solid var(--amber-border)}.refresh-btn{font-size:12px;color:var(--text2);background:none;border:none;cursor:pointer;margin-bottom:1rem;padding:0;font-family:inherit}.empty{text-align:center;color:var(--text3);font-size:14px;padding:2rem 0}.loading{text-align:center;color:var(--text2);font-size:14px;padding:3rem 0}#scanner-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center}.scanner-box{background:var(--bg);border-radius:16px;padding:1.5rem;width:340px;max-width:92vw}#scanner-overlay.open{display:flex}.scanner-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}.scanner-title{font-size:18px;font-weight:500}.close-btn{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text2);line-height:1;font-family:inherit}#video-wrap{background:#000;border-radius:8px;overflow:hidden;height:220px;position:relative;margin-bottom:1rem}#video,#snap-canvas{width:100%;height:100%;object-fit:cover;display:block}.viewfinder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}.viewfinder-rect{border:2px solid rgba(255,255,255,.7);border-radius:8px;width:240px;height:160px}#scan-status{font-size:13px;color:var(--text2);text-align:center;margin-bottom:1rem;min-height:18px}.manual-row{display:flex;gap:8px}.manual-input{flex:1;padding:8px 12px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:14px;font-family:inherit}.manual-btn,.capture-btn{padding:8px 16px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);cursor:pointer;font-size:14px;color:var(--text);font-family:inherit}.capture-btn{width:100%;padding:10px;background:var(--blue-bg);color:var(--blue-text);margin-bottom:1rem}.or-divider{font-size:12px;color:var(--text3);margin-bottom:8px}.matches{margin-bottom:1rem;display:none}.match-btn{width:100%;padding:9px 10px;border-radius:8px;border:.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;text-align:left;margin-bottom:6px;font-family:inherit}.small-note{font-size:11px;color:var(--text3);margin-top:6px;line-height:1.35}
 </style>
 </head>
 <body>
@@ -80,13 +36,8 @@ h1{font-size:22px;font-weight:500;margin-bottom:.75rem}
 
 <div id="tab-pantry">
   <div style="display:flex;gap:8px;margin-bottom:1rem">
-    <button class="scan-btn" style="margin-bottom:0;flex:1" onclick="openScanner('image')">
-      📷 Scan Picture
-    </button>
-    <button class="scan-btn" style="margin-bottom:0;flex:1" onclick="openScanner('barcode')">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="4" height="18" rx="1"/><rect x="8" y="3" width="2" height="18" rx="1"/><rect x="12" y="3" width="4" height="18" rx="1"/><rect x="18" y="3" width="4" height="18" rx="1"/></svg>
-      Scan Barcode
-    </button>
+    <button class="scan-btn" style="margin-bottom:0;flex:1" onclick="openScanner('barcode')">▥ Scan Barcode</button>
+    <button class="scan-btn" style="margin-bottom:0;flex:1" onclick="openScanner('photo')">📷 Scan Label</button>
   </div>
   <div id="pantry-list"></div>
 </div>
@@ -104,27 +55,29 @@ h1{font-size:22px;font-weight:500;margin-bottom:.75rem}
 <div id="scanner-overlay">
   <div class="scanner-box">
     <div class="scanner-header">
-      <span class="scanner-title" id="scanner-title-text">Scan Picture</span>
+      <span class="scanner-title" id="scanner-title-text">Scan</span>
       <button class="close-btn" onclick="closeScanner()">×</button>
     </div>
     <div id="video-wrap">
       <video id="video" autoplay playsinline muted></video>
-      <canvas id="snap-canvas" style="display:none;width:100%;height:100%;object-fit:cover;border-radius:8px"></canvas>
-      <div class="viewfinder" id="viewfinder"><div style="border:2px solid rgba(255,255,255,.7);border-radius:8px;width:240px;height:160px"></div></div>
+      <canvas id="snap-canvas" style="display:none"></canvas>
+      <div class="viewfinder" id="viewfinder"><div class="viewfinder-rect"></div></div>
     </div>
     <div id="scan-status">Ready</div>
-    <button id="capture-btn" onclick="captureAndIdentify()" style="display:none;width:100%;padding:10px;border-radius:8px;border:.5px solid var(--border);background:var(--blue-bg);color:var(--blue-text);font-size:14px;cursor:pointer;font-family:inherit;margin-bottom:1rem">📷 Identify Product</button>
+    <button id="capture-btn" class="capture-btn" onclick="captureAndSearchLabel()" style="display:none">📷 Read Label</button>
+    <div id="matches" class="matches"></div>
     <div class="or-divider">Or type product name manually:</div>
     <div class="manual-row">
-      <input class="manual-input" id="manual-input" placeholder="e.g. Heinz Baked Beans" onkeydown="if(event.key==='Enter')manualAdd()">
+      <input class="manual-input" id="manual-input" placeholder="e.g. Heinz Baked Beans" onkeydown="if(event.key==='Enter')manualAddName()">
       <button class="manual-btn" onclick="manualAddName()">Add</button>
     </div>
+    <div class="small-note">Tip: barcode scanning is most accurate. Label scanning uses OCR to read package text, then searches Open Food Facts.</div>
   </div>
 </div>
 
 <script src="https://unpkg.com/@zxing/library@latest/umd/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const ANTHROPIC_MODEL = "claude-sonnet-4-20250514";
 const SUPABASE_URL = "https://gnawprpsbtfgamgojobc.supabase.co";
 const SUPABASE_KEY = "sb_publishable_WKJC8Gg6EV3PAQYtpaeIwQ_SmBSjK_l";
 const LOW = 2;
@@ -133,9 +86,10 @@ let pantries = [];
 let currentPantry = null;
 let pantry = [];
 let currentTab = 0;
-let recipesCache = {now:null,almost:null};
+let recipesCache = {now:null, almost:null};
 let codeReader = null;
 let stream = null;
+let scanMode = "barcode";
 
 async function api(method, path, body){
   const opts = {
@@ -182,9 +136,7 @@ async function loadPantries(){
 
 function renderSelector(){
   const sel=document.getElementById("pantry-select");
-  sel.innerHTML=pantries.map(p=>
-    `<option value="${p.id}"${p.id===currentPantry.id?" selected":""}>${p.name}</option>`
-  ).join("");
+  sel.innerHTML=pantries.map(p=>`<option value="${p.id}"${p.id===currentPantry.id?" selected":""}>${escapeHtml(p.name)}</option>`).join("");
 }
 
 async function switchPantry(id){
@@ -246,14 +198,14 @@ function render(){
   document.getElementById("item-count").textContent=currentPantry.name+" — "+pantry.length+" items";
   const low=pantry.filter(i=>i.qty<=LOW);
   const la=document.getElementById("low-alert");
-  if(low.length){la.style.display="block";la.innerHTML="<strong>Running low:</strong> "+low.map(i=>i.name).join(", ");}
+  if(low.length){la.style.display="block";la.innerHTML="<strong>Running low:</strong> "+low.map(i=>escapeHtml(i.name)).join(", ");}
   else la.style.display="none";
   const list=document.getElementById("pantry-list");
   if(!pantry.length){list.innerHTML='<div class="empty">No items yet. Scan a barcode to get started.</div>';return;}
   list.innerHTML=pantry.map(item=>`
     <div class="item${item.qty<=LOW?" low":""}">
       <div style="flex:1">
-        <div class="item-name">${item.name}</div>
+        <div class="item-name">${escapeHtml(item.name)}</div>
         ${item.qty<=LOW?'<div class="low-label">Low stock</div>':""}
       </div>
       <button class="qty-btn" onclick="updateQty(${item.id},-1)">−</button>
@@ -282,36 +234,6 @@ function showFeedback(msg){
   showFeedback._t=setTimeout(()=>el.style.display="none",3000);
 }
 
-async function lookupBarcode(code){
-  try{
-    const r=await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
-    const d=await r.json();
-    if(d.status===1&&d.product)return d.product.product_name||d.product.product_name_en||null;
-  }catch(e){}
-  return null;
-}
-
-async function handleScan(code){
-  closeScanner();
-  const name=await lookupBarcode(code);
-  if(name){
-    const ex=pantry.find(i=>i.barcode===code);
-    if(ex){pantry=pantry.map(i=>i.id===ex.id?{...i,qty:i.qty+1}:i);showFeedback("+1 "+name);}
-    else{pantry.push({id:Date.now(),name,qty:1,barcode:code});showFeedback("Added: "+name);}
-  } else {
-    const label=prompt("Product not found for barcode "+code+"\nEnter product name:");
-    if(label){pantry.push({id:Date.now(),name:label,qty:1,barcode:code});showFeedback("Added: "+label);}
-  }
-  render();
-  await saveItems();
-  recipesCache={now:null,almost:null};
-}
-
-function manualAdd(){
-  const v=document.getElementById("manual-input").value.trim();
-  if(v){handleScan(v);document.getElementById("manual-input").value="";}
-}
-
 function setTab(i){
   currentTab=i;
   document.querySelectorAll(".tab").forEach((t,j)=>t.classList.toggle("active",i===j));
@@ -322,37 +244,39 @@ function setTab(i){
   if(i===2&&!recipesCache.almost)loadRecipes("almost");
 }
 
-let scanMode = "image";
-
 function openScanner(mode){
-  scanMode = mode || "image";
+  scanMode = mode || "barcode";
   document.getElementById("scanner-overlay").classList.add("open");
+  document.getElementById("matches").style.display="none";
+  document.getElementById("matches").innerHTML="";
   document.getElementById("snap-canvas").style.display="none";
   document.getElementById("video").style.display="block";
   document.getElementById("viewfinder").style.display="flex";
   const captureBtn = document.getElementById("capture-btn");
-  captureBtn.onclick = captureAndIdentify;
-  if(scanMode==="image"){
-    document.getElementById("scanner-title-text").textContent="Scan Picture";
+
+  if(scanMode==="photo"){
+    document.getElementById("scanner-title-text").textContent="Scan Label";
     captureBtn.style.display="block";
     captureBtn.disabled=false;
-    captureBtn.textContent="📷 Identify Product";
-    document.getElementById("scan-status").textContent="Point camera at product and tap Identify";
+    captureBtn.textContent="📷 Read Label";
+    document.getElementById("scan-status").textContent="Point camera at the product label and tap Read Label";
   } else {
     document.getElementById("scanner-title-text").textContent="Scan Barcode";
     captureBtn.style.display="none";
     document.getElementById("scan-status").textContent="Point camera at barcode";
   }
+
   if(location.protocol==="file:"){
     document.getElementById("scan-status").textContent="Camera blocked: open via HTTPS for this to work on iPhone.";
     return;
   }
-  startCamera(mode);
+  startCamera(scanMode);
 }
 
 function closeScanner(){
   document.getElementById("scanner-overlay").classList.remove("open");
   stopCamera();
+  if(codeReader){try{codeReader.reset();}catch(e){} codeReader=null;}
 }
 
 function stopCamera(){
@@ -373,12 +297,11 @@ function startCamera(mode){
 }
 
 function startBarcodeDecoding(){
-  if(typeof ZXing==="undefined"){setTimeout(()=>startBarcodeDecoding(),500);return;}
+  if(typeof ZXing==="undefined"){setTimeout(startBarcodeDecoding,500);return;}
   try{
     codeReader=new ZXing.BrowserMultiFormatReader();
     codeReader.decodeFromVideoDevice(null,"video",(result,err)=>{
       if(result){
-        stopCamera();
         handleBarcodeResult(result.getText());
       }
     });
@@ -387,82 +310,152 @@ function startBarcodeDecoding(){
   }
 }
 
+async function lookupBarcode(code){
+  try{
+    const r=await fetch(`https://world.openfoodfacts.org/api/v0/product/${encodeURIComponent(code)}.json`);
+    const d=await r.json();
+    if(d.status===1&&d.product){
+      return cleanProductName(d.product.product_name || d.product.product_name_en || d.product.brands || "");
+    }
+  }catch(e){}
+  return null;
+}
+
 async function handleBarcodeResult(code){
   closeScanner();
   const name=await lookupBarcode(code);
   if(name){
-    const ex=pantry.find(i=>i.barcode===code);
-    if(ex){pantry=pantry.map(i=>i.id===ex.id?{...i,qty:i.qty+1}:i);showFeedback("+1 "+name);}
-    else{pantry.push({id:Date.now(),name,qty:1,barcode:code});showFeedback("Added: "+name);}
+    addOrIncrementItem(name, code);
+    showFeedback("Added: "+name);
   } else {
     const label=prompt("Product not found for barcode "+code+"\nEnter product name:");
-    if(label){pantry.push({id:Date.now(),name:label,qty:1,barcode:code});showFeedback("Added: "+label);}
+    if(label){addOrIncrementItem(label, code);showFeedback("Added: "+label);}
   }
   render();
   await saveItems();
   recipesCache={now:null,almost:null};
 }
 
-
+async function captureAndSearchLabel(){
   const video=document.getElementById("video");
   const canvas=document.getElementById("snap-canvas");
   const btn=document.getElementById("capture-btn");
-  // draw frame to canvas
+  const status=document.getElementById("scan-status");
+  const matches=document.getElementById("matches");
+
   canvas.width=video.videoWidth||640;
   canvas.height=video.videoHeight||480;
   const ctx=canvas.getContext("2d");
   ctx.drawImage(video,0,0,canvas.width,canvas.height);
-  // show snapshot, hide live feed
+
   video.style.display="none";
   document.getElementById("viewfinder").style.display="none";
   canvas.style.display="block";
   stopCamera();
+
   btn.disabled=true;
-  btn.textContent="Identifying…";
-  document.getElementById("scan-status").textContent="Asking AI to identify product…";
-  // get base64
-  const base64=canvas.toDataURL("image/jpeg",.85).split(",")[1];
+  btn.textContent="Reading label…";
+  status.textContent="Reading product text from image…";
+  matches.style.display="none";
+  matches.innerHTML="";
+
   try{
-    const res=await fetch("https://api.anthropic.com/v1/messages",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        model:ANTHROPIC_MODEL,
-        max_tokens:200,
-        messages:[{role:"user",content:[
-          {type:"image",source:{type:"base64",media_type:"image/jpeg",data:base64}},
-          {type:"text",text:"This is a photo of a food or grocery product. Reply with ONLY the product name (brand + product, e.g. 'Heinz Baked Beans' or 'Quaker Oats'). If you cannot identify a food product, reply with exactly: UNKNOWN"}
-        ]}]
-      })
-    });
-    const data=await res.json();
-    const name=(data.content?.find(b=>b.type==="text")?.text||"").trim();
-    if(!name||name==="UNKNOWN"){
-      document.getElementById("scan-status").textContent="Could not identify. Try manual entry below.";
-      btn.disabled=false;
-      btn.textContent="📷 Try Again";
-      // restart camera on retry
-      btn.onclick=()=>{
-        canvas.style.display="none";
-        video.style.display="block";
-        document.getElementById("viewfinder").style.display="flex";
-        document.getElementById("scan-status").textContent="Point camera at product and tap Identify";
-        btn.onclick=captureAndIdentify;
-        startCamera();
-      };
-    } else {
-      closeScanner();
-      const existing=pantry.find(i=>i.name.toLowerCase()===name.toLowerCase());
-      if(existing){pantry=pantry.map(i=>i.id===existing.id?{...i,qty:i.qty+1}:i);showFeedback("+1 "+name);}
-      else{pantry.push({id:Date.now(),name,qty:1,barcode:""});showFeedback("Added: "+name);}
-      render();
-      await saveItems();
-      recipesCache={now:null,almost:null};
+    const result = await Tesseract.recognize(canvas, "eng");
+    const rawText = result?.data?.text || "";
+    const query = buildProductSearchQuery(rawText);
+
+    if(!query){
+      status.textContent="Could not read enough label text. Try manual entry below.";
+      resetPhotoButton();
+      return;
     }
+
+    status.textContent="Searching products for: " + query;
+    const products = await searchOpenFoodFacts(query);
+
+    if(!products.length){
+      status.textContent="No clear product match found. Try manual entry below.";
+      resetPhotoButton();
+      return;
+    }
+
+    status.textContent="Choose the best match:";
+    matches.style.display="block";
+    matches.innerHTML = products.slice(0,5).map((p,idx)=>{
+      const name = cleanProductName(p.product_name || p.product_name_en || p.generic_name || "Unknown product");
+      const brand = cleanProductName(p.brands || "");
+      const label = brand && !name.toLowerCase().includes(brand.toLowerCase()) ? `${brand} ${name}` : name;
+      return `<button class="match-btn" onclick="chooseProductMatch('${escapeJs(label)}')">${escapeHtml(label)}</button>`;
+    }).join("");
+
+    resetPhotoButton("📷 Try Again");
   }catch(e){
-    document.getElementById("scan-status").textContent="Error identifying product. Try again.";
-    btn.disabled=false;
-    btn.textContent="📷 Try Again";
+    status.textContent="Error reading label. Try manual entry below.";
+    resetPhotoButton("📷 Try Again");
+  }
+}
+
+function resetPhotoButton(text){
+  const btn=document.getElementById("capture-btn");
+  btn.disabled=false;
+  btn.textContent=text || "📷 Try Again";
+  btn.onclick=()=>{
+    document.getElementById("snap-canvas").style.display="none";
+    document.getElementById("video").style.display="block";
+    document.getElementById("viewfinder").style.display="flex";
+    document.getElementById("matches").style.display="none";
+    document.getElementById("matches").innerHTML="";
+    document.getElementById("scan-status").textContent="Point camera at the product label and tap Read Label";
+    btn.onclick=captureAndSearchLabel;
+    startCamera("photo");
+  };
+}
+
+async function chooseProductMatch(name){
+  closeScanner();
+  addOrIncrementItem(name, "");
+  render();
+  await saveItems();
+  recipesCache={now:null,almost:null};
+  showFeedback("Added: "+name);
+}
+
+function buildProductSearchQuery(text){
+  const badWords = new Set([
+    "nutrition","facts","calories","serving","servings","amount","daily","value","total","fat","sodium","carbohydrate","protein","ingredients","contains","distributed","manufactured","best","before","use","by","net","wt","oz","g","ml","fl","barcode","recycle","keep","refrigerated","natural","artificial","flavor","flavors"
+  ]);
+
+  const words = text
+    .replace(/[^a-zA-Z0-9\s&'-]/g," ")
+    .split(/\s+/)
+    .map(w=>w.trim())
+    .filter(w=>w.length>2)
+    .filter(w=>!badWords.has(w.toLowerCase()))
+    .filter(w=>!/^[0-9]+$/.test(w));
+
+  const unique=[];
+  for(const w of words){
+    const lower=w.toLowerCase();
+    if(!unique.find(x=>x.toLowerCase()===lower)) unique.push(w);
+  }
+
+  return unique.slice(0,6).join(" ").trim();
+}
+
+async function searchOpenFoodFacts(query){
+  try{
+    const url = "https://world.openfoodfacts.org/cgi/search.pl?" + new URLSearchParams({
+      search_terms: query,
+      search_simple: "1",
+      action: "process",
+      json: "1",
+      page_size: "8"
+    });
+    const r=await fetch(url);
+    const d=await r.json();
+    return (d.products || []).filter(p=>p.product_name || p.product_name_en || p.brands);
+  }catch(e){
+    return [];
   }
 }
 
@@ -470,46 +463,73 @@ function manualAddName(){
   const v=document.getElementById("manual-input").value.trim();
   if(!v)return;
   closeScanner();
-  const existing=pantry.find(i=>i.name.toLowerCase()===v.toLowerCase());
-  if(existing){pantry=pantry.map(i=>i.id===existing.id?{...i,qty:i.qty+1}:i);showFeedback("+1 "+v);}
-  else{pantry.push({id:Date.now(),name:v,qty:1,barcode:""});showFeedback("Added: "+v);}
+  addOrIncrementItem(v, "");
   document.getElementById("manual-input").value="";
   render();
   saveItems();
   recipesCache={now:null,almost:null};
+  showFeedback("Added: "+v);
+}
+
+function addOrIncrementItem(name, barcode){
+  const clean = cleanProductName(name);
+  const existing = pantry.find(i =>
+    (barcode && i.barcode === barcode) || i.name.toLowerCase() === clean.toLowerCase()
+  );
+  if(existing){
+    pantry = pantry.map(i=>i.id===existing.id?{...i,qty:i.qty+1}:i);
+  } else {
+    pantry.push({id:Date.now(),name:clean,qty:1,barcode:barcode||""});
+  }
+}
+
+function cleanProductName(name){
+  return String(name || "")
+    .replace(/\s+/g," ")
+    .replace(/^[,\-\s]+|[,\-\s]+$/g,"")
+    .trim();
 }
 
 async function loadRecipes(mode){
   const el=document.getElementById("recipes-"+mode);
   if(!pantry.length){el.innerHTML='<div class="empty">Add items to your pantry first.</div>';return;}
-  el.innerHTML='<div class="loading">Finding recipes…</div>';
-  const items=pantry.map(i=>`${i.name} (qty: ${i.qty})`).join(", ");
-  const prompt=mode==="now"
-    ?`Given these pantry items: ${items}\n\nSuggest 4 recipes I can make RIGHT NOW using only these ingredients. Return JSON only, no markdown: [{"name":"...","ingredients":["..."],"description":"..."}]`
-    :`Given these pantry items: ${items}\n\nSuggest 4 recipes missing exactly 1 or 2 ingredients. Return JSON only, no markdown: [{"name":"...","have":["..."],"missing":["..."],"description":"..."}]`;
-  try{
-    const res=await fetch("https://api.anthropic.com/v1/messages",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({model:ANTHROPIC_MODEL,max_tokens:1000,messages:[{role:"user",content:prompt}]})
-    });
-    const data=await res.json();
-    const text=data.content?.find(b=>b.type==="text")?.text||"[]";
-    const clean=text.replace(/```json|```/g,"").trim();
-    const recipes=JSON.parse(clean);
-    recipesCache[mode]=recipes;
-    el.innerHTML=recipes.map(r=>`
-      <div class="recipe-card">
-        <div class="recipe-name">${r.name}</div>
-        <div class="recipe-desc">${r.description}</div>
-        <div class="tags">
-          ${(mode==="now"?r.ingredients:r.have||[]).map(ing=>`<span class="tag have">${ing}</span>`).join("")}
-          ${mode==="almost"?(r.missing||[]).map(ing=>`<span class="tag need">Need: ${ing}</span>`).join(""):""}
-        </div>
-      </div>`).join("");
-  }catch(e){
-    el.innerHTML='<div class="empty">Could not load recipes. Try again.</div>';
+
+  // No LLM here. This is a simple local fallback based on common pantry combinations.
+  const names = pantry.map(i=>i.name.toLowerCase());
+  const has = term => names.some(n=>n.includes(term));
+  const ideas = [];
+
+  if(has("pasta") || has("spaghetti") || has("noodle")) ideas.push({name:"Simple Pantry Pasta", description:"Use pasta with any sauce, canned tomatoes, oil, or seasoning you have on hand.", ingredients:["pasta"]});
+  if(has("rice")) ideas.push({name:"Rice Bowl", description:"Build a bowl with rice plus canned beans, vegetables, tuna, chicken, or sauce.", ingredients:["rice"]});
+  if(has("beans")) ideas.push({name:"Bean Bowl", description:"Use beans with rice, tortillas, toast, salsa, or seasoning.", ingredients:["beans"]});
+  if(has("oats") || has("oatmeal")) ideas.push({name:"Oatmeal", description:"Make oats with milk or water, then add fruit, nuts, honey, or cinnamon if available.", ingredients:["oats"]});
+  if(has("tuna")) ideas.push({name:"Tuna Toast or Tuna Bowl", description:"Use tuna with bread, crackers, rice, pasta, mayo, mustard, or seasoning.", ingredients:["tuna"]});
+
+  if(mode==="almost"){
+    ideas.push({name:"Pasta with Sauce", description:"You may only need sauce, canned tomatoes, or cheese.", have:names.slice(0,3), missing:["sauce or tomatoes"]});
+    ideas.push({name:"Rice and Beans", description:"You may only need rice, beans, salsa, or seasoning depending on what is missing.", have:names.slice(0,3), missing:["rice or beans"]});
   }
+
+  const finalIdeas = ideas.slice(0,4);
+  if(!finalIdeas.length){el.innerHTML='<div class="empty">No simple recipe ideas found yet. Add more pantry staples.</div>';return;}
+
+  el.innerHTML = finalIdeas.map(r=>`
+    <div class="recipe-card">
+      <div class="recipe-name">${escapeHtml(r.name)}</div>
+      <div class="recipe-desc">${escapeHtml(r.description)}</div>
+      <div class="tags">
+        ${(mode==="now"?(r.ingredients||[]):(r.have||[])).map(ing=>`<span class="tag have">${escapeHtml(ing)}</span>`).join("")}
+        ${mode==="almost"?(r.missing||[]).map(ing=>`<span class="tag need">Need: ${escapeHtml(ing)}</span>`).join(""):""}
+      </div>
+    </div>`).join("");
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));
+}
+
+function escapeJs(s){
+  return String(s).replace(/\\/g,"\\\\").replace(/'/g,"\\'").replace(/\n/g," ");
 }
 
 loadPantries();
